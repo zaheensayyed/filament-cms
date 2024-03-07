@@ -1,15 +1,15 @@
 {
-    "name": ":vendor_slug/:package_slug",
+    "name": "zaheensayyed/filament-cms",
     "description": ":package_description",
     "keywords": [
         ":vendor_name",
         "laravel",
-        ":package_slug"
+        "filament-cms"
     ],
-    "homepage": "https://github.com/:vendor_slug/:package_slug",
+    "homepage": "https://github.com/zaheensayyed/filament-cms",
     "support": {
-        "issues": "https://github.com/:vendor_slug/:package_slug/issues",
-        "source": "https://github.com/:vendor_slug/:package_slug"
+        "issues": "https://github.com/zaheensayyed/filament-cms/issues",
+        "source": "https://github.com/zaheensayyed/filament-cms"
     },
     "license": "MIT",
     "authors": [
@@ -42,17 +42,16 @@
     },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src/",
-            "VendorName\\Skeleton\\Database\\Factories\\": "database/factories/"
+            "zaheensayyed\\FilamentCms\\": "src/",
+            "zaheensayyed\\FilamentCms\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "VendorName\\Skeleton\\Tests\\": "tests/"
+            "zaheensayyed\\FilamentCms\\Tests\\": "tests/"
         }
     },
     "scripts": {
-        "post-autoload-dump": "@php ./vendor/bin/testbench package:discover --ansi",
         "analyse": "vendor/bin/phpstan analyse",
         "test": "vendor/bin/pest",
         "test-coverage": "vendor/bin/pest --coverage",
@@ -68,10 +67,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "VendorName\\Skeleton\\SkeletonServiceProvider"
+                "zaheensayyed\\FilamentCms\\FilamentCmsServiceProvider"
             ],
             "aliases": {
-                "Skeleton": "VendorName\\Skeleton\\Facades\\Skeleton"
+                "FilamentCms": "zaheensayyed\\FilamentCms\\Facades\\FilamentCms"
             }
         }
     },

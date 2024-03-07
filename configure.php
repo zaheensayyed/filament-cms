@@ -72,16 +72,16 @@ if (! confirm('Modify files?', true)) {
 }
 
 if ($formsOnly) {
-    safeUnlink(__DIR__ . '/src/SkeletonTheme.php');
-    safeUnlink(__DIR__ . '/src/SkeletonPlugin.php');
+    safeUnlink(__DIR__ . '/src/FilamentCmsTheme.php');
+    safeUnlink(__DIR__ . '/src/FilamentCmsPlugin.php');
 
     removeComposerDeps([
         'filament/filament',
         'filament/tables',
     ], 'require');
 } elseif ($tablesOnly) {
-    safeUnlink(__DIR__ . '/src/SkeletonTheme.php');
-    safeUnlink(__DIR__ . '/src/SkeletonPlugin.php');
+    safeUnlink(__DIR__ . '/src/FilamentCmsTheme.php');
+    safeUnlink(__DIR__ . '/src/FilamentCmsPlugin.php');
 
     removeComposerDeps([
         'filament/filament',
@@ -89,9 +89,9 @@ if ($formsOnly) {
     ], 'require');
 } else {
     if ($isTheme) {
-        safeUnlink(__DIR__ . '/src/SkeletonServiceProvider.php');
-        safeUnlink(__DIR__ . '/src/SkeletonPlugin.php');
-        safeUnlink(__DIR__ . '/src/Skeleton.php');
+        safeUnlink(__DIR__ . '/src/FilamentCmsServiceProvider.php');
+        safeUnlink(__DIR__ . '/src/FilamentCmsPlugin.php');
+        safeUnlink(__DIR__ . '/src/FilamentCms.php');
         removeDirectory(__DIR__ . '/bin');
         removeDirectory(__DIR__ . '/config');
         removeDirectory(__DIR__ . '/database');
@@ -106,7 +106,7 @@ if ($formsOnly) {
         setupPackageJsonForTheme();
 
     } else {
-        safeUnlink(__DIR__ . '/src/SkeletonTheme.php');
+        safeUnlink(__DIR__ . '/src/FilamentCmsTheme.php');
     }
 
     removeComposerDeps([
@@ -124,28 +124,28 @@ foreach ($files as $file) {
         'author@domain.com' => $authorEmail,
         ':vendor_name' => $vendorName,
         ':vendor_slug' => $vendorSlug,
-        'VendorName' => $vendorNamespace,
+        'zaheensayyed' => $vendorNamespace,
         ':package_name' => $packageName,
         ':package_slug' => $packageSlug,
         ':package_slug_without_prefix' => $packageSlugWithoutPrefix,
-        'Skeleton' => $className,
-        'skeleton' => $packageSlug,
+        'FilamentCms' => $className,
+        'filament-cms' => $packageSlug,
         'migration_table_name' => titleSnake($packageSlug),
         'variable' => $variableName,
         ':package_description' => $description,
     ]);
 
     match (true) {
-        str_contains($file, determineSeparator('src/Skeleton.php')) => rename($file, determineSeparator('./src/' . $className . '.php')),
-        str_contains($file, determineSeparator('src/SkeletonServiceProvider.php')) => rename($file, determineSeparator('./src/' . $className . 'ServiceProvider.php')),
-        str_contains($file, determineSeparator('src/SkeletonTheme.php')) => rename($file, determineSeparator('./src/' . $className . (str_ends_with($className, 'Theme') ? '.php' : 'Theme.php'))),
-        str_contains($file, determineSeparator('src/SkeletonPlugin.php')) => rename($file, determineSeparator('./src/' . $className . 'Plugin.php')),
-        str_contains($file, determineSeparator('src/Facades/Skeleton.php')) => rename($file, determineSeparator('./src/Facades/' . $className . '.php')),
-        str_contains($file, determineSeparator('src/Commands/SkeletonCommand.php')) => rename($file, determineSeparator('./src/Commands/' . $className . 'Command.php')),
-        str_contains($file, determineSeparator('src/Testing/TestsSkeleton.php')) => rename($file, determineSeparator('./src/Testing/Tests' . $className . '.php')),
-        str_contains($file, determineSeparator('database/migrations/create_skeleton_table.php.stub')) => rename($file, determineSeparator('./database/migrations/create_' . titleSnake($packageSlugWithoutPrefix) . '_table.php.stub')),
-        str_contains($file, determineSeparator('config/skeleton.php')) => rename($file, determineSeparator('./config/' . $packageSlugWithoutPrefix . '.php')),
-        str_contains($file, determineSeparator('resources/lang/en/skeleton.php')) => rename($file, determineSeparator('./resources/lang/en/' . $packageSlugWithoutPrefix . '.php')),
+        str_contains($file, determineSeparator('src/FilamentCms.php')) => rename($file, determineSeparator('./src/' . $className . '.php')),
+        str_contains($file, determineSeparator('src/FilamentCmsServiceProvider.php')) => rename($file, determineSeparator('./src/' . $className . 'ServiceProvider.php')),
+        str_contains($file, determineSeparator('src/FilamentCmsTheme.php')) => rename($file, determineSeparator('./src/' . $className . (str_ends_with($className, 'Theme') ? '.php' : 'Theme.php'))),
+        str_contains($file, determineSeparator('src/FilamentCmsPlugin.php')) => rename($file, determineSeparator('./src/' . $className . 'Plugin.php')),
+        str_contains($file, determineSeparator('src/Facades/FilamentCms.php')) => rename($file, determineSeparator('./src/Facades/' . $className . '.php')),
+        str_contains($file, determineSeparator('src/Commands/FilamentCmsCommand.php')) => rename($file, determineSeparator('./src/Commands/' . $className . 'Command.php')),
+        str_contains($file, determineSeparator('src/Testing/TestsFilamentCms.php')) => rename($file, determineSeparator('./src/Testing/Tests' . $className . '.php')),
+        str_contains($file, determineSeparator('database/migrations/create_filament-cms_table.php.stub')) => rename($file, determineSeparator('./database/migrations/create_' . titleSnake($packageSlugWithoutPrefix) . '_table.php.stub')),
+        str_contains($file, determineSeparator('config/filament-cms.php')) => rename($file, determineSeparator('./config/' . $packageSlugWithoutPrefix . '.php')),
+        str_contains($file, determineSeparator('resources/lang/en/filament-cms.php')) => rename($file, determineSeparator('./resources/lang/en/' . $packageSlugWithoutPrefix . '.php')),
         str_contains($file, 'README.md') => removeTag($file, 'delete'),
         default => [],
     };
@@ -342,14 +342,14 @@ function determineSeparator(string $path): string
 
 function replaceForWindows(): array
 {
-    return preg_split('/\\r\\n|\\r|\\n/', run('dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i ' . basename(__FILE__) . ' | findstr /r /i /M /F:/ ":author :vendor :package VendorName skeleton migration_table_name vendor_name vendor_slug author@domain.com"'));
+    return preg_split('/\\r\\n|\\r|\\n/', run('dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i ' . basename(__FILE__) . ' | findstr /r /i /M /F:/ ":author :vendor :package zaheensayyed filament-cms migration_table_name vendor_name vendor_slug author@domain.com"'));
 }
 
 function replaceForAllOtherOSes(): array
 {
     return explode(PHP_EOL, run('find ./* ./.github/* -name "vendor" -type d -prune \
      -o -name "configure.php" -prune \
-     -o -type f -print0 | xargs -0 grep -E -r -l -i ":author|:vendor|:package|VendorName|skeleton|migration_table_name|vendor_name|vendor_slug|author@domain.com"'));
+     -o -type f -print0 | xargs -0 grep -E -r -l -i ":author|:vendor|:package|zaheensayyed|filament-cms|migration_table_name|vendor_name|vendor_slug|author@domain.com"'));
 }
 
 function removeDirectory($dir): void
