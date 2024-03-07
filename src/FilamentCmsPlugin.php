@@ -1,15 +1,15 @@
 <?php
 
-namespace VendorName\Skeleton;
+namespace zaheensayyed\FilamentCms;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 
-class SkeletonPlugin implements Plugin
+class FilamentCmsPlugin implements Plugin
 {
     public function getId(): string
     {
-        return 'skeleton';
+        return 'filament-cms';
     }
 
     public function register(Panel $panel): void
