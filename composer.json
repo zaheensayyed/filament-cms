@@ -2,7 +2,7 @@
     "name": "zaheensayyed/filament-cms",
     "description": ":package_description",
     "keywords": [
-        ":vendor_name",
+        "zaheensayyed",
         "laravel",
         "filament-cms"
     ],
@@ -14,7 +14,7 @@
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
+            "name": "zaheensayyed",
             "email": "author@domain.com",
             "role": "Developer"
         }
