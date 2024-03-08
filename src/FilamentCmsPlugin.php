@@ -2,8 +2,8 @@
 
 namespace zaheensayyed\FilamentCms;
 
-use Filament\Panel;
 use Filament\Contracts\Plugin;
+use Filament\Panel;
 use zaheensayyed\FilamentCms\Resources\NavigationResource;
 
 class FilamentCmsPlugin implements Plugin

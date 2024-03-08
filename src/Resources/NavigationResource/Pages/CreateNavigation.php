@@ -2,10 +2,9 @@
 
 namespace zaheensayyed\FilamentCms\Resources\NavigationResource\Pages;
 
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
-use zaheensayyed\FilamentCms\Traits\CommonResourceTrait;
 use zaheensayyed\FilamentCms\Resources\NavigationResource;
+use zaheensayyed\FilamentCms\Traits\CommonResourceTrait;
 
 class CreateNavigation extends CreateRecord
 {

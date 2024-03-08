@@ -2,9 +2,9 @@
 
 namespace zaheensayyed\FilamentCms\Resources\NavigationResource\Pages;
 
-use zaheensayyed\FilamentCms\Resources\NavigationResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use zaheensayyed\FilamentCms\Resources\NavigationResource;
 use zaheensayyed\FilamentCms\Traits\CommonResourceTrait;
 
 class EditNavigation extends EditRecord

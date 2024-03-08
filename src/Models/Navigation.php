@@ -3,9 +3,8 @@
 namespace zaheensayyed\FilamentCms\Models;
 
 use App\Models\User;
-use Illuminate\Database\Eloquent\Model;
-use zaheensayyed\FilamentCms\Models\NavigationItem;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Navigation extends Model
 {
@@ -15,18 +14,21 @@ class Navigation extends Model
         'name',
         'description',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
-    public function createdBy(){
+    public function createdBy()
+    {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function updatedBy(){
+    public function updatedBy()
+    {
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    public function items(){
+    public function items()
+    {
         return $this->hasMany(NavigationItem::class, 'navigation_id');
     }
 }
