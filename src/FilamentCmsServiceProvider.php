@@ -62,6 +62,11 @@ class FilamentCmsServiceProvider extends PackageServiceProvider
     {
     }
 
+    public function boot()
+    {
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+    }
+
     public function packageBooted(): void
     {
         // Asset Registration
@@ -93,7 +98,7 @@ class FilamentCmsServiceProvider extends PackageServiceProvider
 
     protected function getAssetPackageName(): ?string
     {
-        return ':vendor_slug/:package_slug';
+        return 'zaheensayyed/filament-cms';
     }
 
     /**
