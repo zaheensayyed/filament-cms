@@ -4,6 +4,7 @@ namespace zaheensayyed\FilamentCms;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use zaheensayyed\FilamentCms\Resources\NavigationResource;
 
 class FilamentCmsPlugin implements Plugin
 {
@@ -14,7 +15,13 @@ class FilamentCmsPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        //
+        $panel
+            ->resources([
+                NavigationResource::class,
+            ])
+            ->pages([
+                // Settings::class,
+            ]);
     }
 
     public function boot(Panel $panel): void
