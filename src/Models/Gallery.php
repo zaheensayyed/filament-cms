@@ -3,8 +3,8 @@
 namespace zaheensayyed\FilamentCms\Models;
 
 use App\Models\User;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Gallery extends Model
 {
@@ -15,18 +15,21 @@ class Gallery extends Model
         'slug',
         'description',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
-    public function createdBy(){
+    public function createdBy()
+    {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function updatedBy(){
+    public function updatedBy()
+    {
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    public function images(){
+    public function images()
+    {
         return $this->hasMany(GalleryImage::class, 'gallery_id');
     }
 }

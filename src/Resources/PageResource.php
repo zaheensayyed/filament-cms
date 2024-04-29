@@ -2,22 +2,17 @@
 
 namespace zaheensayyed\FilamentCms\Resources;
 
-use Filament\Forms;
-use Filament\Tables;
-use Filament\Forms\Set;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
-use Filament\Resources\Resource;
-use Filament\Forms\Components\Grid;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\RichEditor;
-use Illuminate\Database\Eloquent\Builder;
 use zaheensayyed\FilamentCms\Models\Page;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use zaheensayyed\FilamentCms\ResourcesPageResource\RelationManagers;
-use Filament\Forms\Components\FileUpload;
 use zaheensayyed\FilamentCms\Resources\PageResource\Pages;
 
 class PageResource extends Resource
@@ -34,14 +29,14 @@ class PageResource extends Resource
                     ->schema([
                         TextInput::make('title')
                             ->required()
-                            ->live(debounce:1000)
-                            ->afterStateUpdated(function(Set $set, $state){
+                            ->live(debounce: 1000)
+                            ->afterStateUpdated(function (Set $set, $state) {
                                 $set('slug', Str::slug($state));
                             }),
                         TextInput::make('slug')->required(),
                     ])
                     ->columns(2),
-                RichEditor::make('body')
+                RichEditor::make('body'),
             ])
             ->columns(1);
     }
@@ -53,8 +48,8 @@ class PageResource extends Resource
                 TextColumn::make('id'),
                 TextColumn::make('title'),
                 TextColumn::make('slug'),
-                TextColumn::make('createdBy.name')->description(fn(Page $record) => $record->created_at),
-                TextColumn::make('updatedBy.name')->description(fn(Page $record) => $record->updated_at),
+                TextColumn::make('createdBy.name')->description(fn (Page $record) => $record->created_at),
+                TextColumn::make('updatedBy.name')->description(fn (Page $record) => $record->updated_at),
             ])
             ->filters([
                 //

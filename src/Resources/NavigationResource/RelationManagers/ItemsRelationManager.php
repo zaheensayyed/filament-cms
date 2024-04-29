@@ -2,22 +2,20 @@
 
 namespace zaheensayyed\FilamentCms\Resources\NavigationResource\RelationManagers;
 
-use Filament\Tables;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Illuminate\Support\Str;
-use Filament\Forms\Components\Grid;
-use PhpParser\Node\Expr\Cast\Array_;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Repeater;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TextInput;
-use Illuminate\Database\Eloquent\Builder;
-use zaheensayyed\FilamentCms\Models\NavigationItem;
 use Filament\Resources\RelationManagers\RelationManager;
-use zaheensayyed\FilamentCms\Models\Navigation;
+use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
+use zaheensayyed\FilamentCms\Models\NavigationItem;
 use zaheensayyed\FilamentCms\Repositories\CommonRepository;
 use zaheensayyed\FilamentCms\Repositories\NavigationItemRepository;
 
@@ -33,7 +31,7 @@ class ItemsRelationManager extends RelationManager
                     ->required()
                     ->maxLength(255)
                     ->live(debounce: 1000)
-                    ->afterStateUpdated(function(Set $set, $state){
+                    ->afterStateUpdated(function (Set $set, $state) {
                         $set('slug', Str::slug($state));
                     }),
                 TextInput::make('slug')
@@ -46,11 +44,12 @@ class ItemsRelationManager extends RelationManager
                     ->required(),
                 Select::make('type_id')
                     ->required()
-                    ->options(function(Get $get){
+                    ->options(function (Get $get) {
                         $type = $get('type');
-                        if($type){
-                             return CommonRepository::navigationTypeSelectOptions($type);
+                        if ($type) {
+                            return CommonRepository::navigationTypeSelectOptions($type);
                         }
+
                         return [];
                     }),
                 Grid::make('child_items_grid')
@@ -61,31 +60,32 @@ class ItemsRelationManager extends RelationManager
                                     ->required()
                                     ->maxLength(255)
                                     ->live(debounce: 1000)
-                                    ->afterStateUpdated(function(Set $set, Callable $get, $state){
+                                    ->afterStateUpdated(function (Set $set, callable $get, $state) {
                                         $set('child_slug', Str::slug($state));
                                     }),
                                 TextInput::make('child_slug')
                                     ->required(),
                                 Select::make('child_type')
                                     ->options([
-                                        NavigationItem::TYPE_PAGE => 'Page'
+                                        NavigationItem::TYPE_PAGE => 'Page',
                                     ])
                                     ->default(NavigationItem::TYPE_PAGE)
                                     ->required(),
                                 Select::make('child_type_id')
                                     ->required()
-                                    ->options(function(Get $get){
+                                    ->options(function (Get $get) {
                                         $type = $get('child_type');
-                                        if($type){
+                                        if ($type) {
                                             return CommonRepository::navigationTypeSelectOptions($type);
                                         }
+
                                         return [];
                                     }),
                             ])
-                            ->columns(2)
+                            ->columns(2),
                     ])
                     ->columns(1),
-                
+
             ]);
     }
 
@@ -114,7 +114,7 @@ class ItemsRelationManager extends RelationManager
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->mutateRecordDataUsing(function (array $data, NavigationItem $record): array {
-                        return NavigationItemRepository::mutateBeforeFill($data, $record); 
+                        return NavigationItemRepository::mutateBeforeFill($data, $record);
                     })
                     ->using(function ($data, NavigationItem $record) {
                         CommonRepository::mutateDataForUpdatedBy($data);

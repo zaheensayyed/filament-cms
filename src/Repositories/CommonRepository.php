@@ -5,17 +5,19 @@ namespace zaheensayyed\FilamentCms\Repositories;
 use zaheensayyed\FilamentCms\Models\NavigationItem;
 use zaheensayyed\FilamentCms\Models\Page;
 
-class CommonRepository {
-
+class CommonRepository
+{
     public static function mutateDataForCreatedBy(array $data): array
     {
         $data['created_by'] = auth()->id();
+
         return $data;
     }
 
     public static function mutateDataForUpdatedBy(array $data): array
     {
         $data['created_by'] = auth()->id();
+
         return $data;
     }
 
@@ -25,10 +27,11 @@ class CommonRepository {
         switch ($type) {
             case NavigationItem::TYPE_PAGE:
                 $options = Page::pluck('title', 'id')->toArray();
-                break;  
-            
+
+                break;
+
             default:
-                # code...
+                // code...
                 break;
         }
 

@@ -38,14 +38,17 @@ class NavigationItem extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    public function childItems(){
+    public function childItems()
+    {
         return $this->hasMany(NavigationItem::class, 'parent_id');
     }
 
-    public function page(){
-        if($this->type == NavigationItem::TYPE_PAGE){
+    public function page()
+    {
+        if ($this->type == NavigationItem::TYPE_PAGE) {
             return $this->belongsTo(Page::class, 'type_id');
         }
+
         return false;
     }
 }

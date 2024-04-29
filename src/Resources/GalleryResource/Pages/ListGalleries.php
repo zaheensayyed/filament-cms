@@ -2,9 +2,9 @@
 
 namespace zaheensayyed\FilamentCms\Resources\GalleryResource\Pages;
 
-use zaheensayyed\FilamentCms\Resources\GalleryResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use zaheensayyed\FilamentCms\Resources\GalleryResource;
 
 class ListGalleries extends ListRecords
 {

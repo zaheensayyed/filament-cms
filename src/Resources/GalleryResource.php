@@ -2,21 +2,18 @@
 
 namespace zaheensayyed\FilamentCms\Resources;
 
-use Filament\Forms;
-use Filament\Tables;
-use Filament\Forms\Set;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Illuminate\Support\Str;
-use Filament\Resources\Resource;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Textarea;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\FileUpload;
-use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Form;
+use Filament\Forms\Set;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use Illuminate\Support\Str;
 use zaheensayyed\FilamentCms\Models\Gallery;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use zaheensayyed\FilamentCms\Resources\GalleryResource\Pages;
 use zaheensayyed\FilamentCms\Resources\GalleryResource\RelationManagers\ImagesRelationManager;
 
@@ -34,8 +31,8 @@ class GalleryResource extends Resource
             ->schema([
                 TextInput::make('name')
                     ->required()
-                    ->live(debounce:1000)
-                    ->afterStateUpdated(function(Set $set, $state){
+                    ->live(debounce: 1000)
+                    ->afterStateUpdated(function (Set $set, $state) {
                         $set('slug', Str::slug($state));
                     }),
                 TextInput::make('slug')->required(),
@@ -44,7 +41,7 @@ class GalleryResource extends Resource
                     ->schema([
                         FileUpload::make('images')
                             ->multiple()
-                            ->directory(function(Callable $get){
+                            ->directory(function (callable $get) {
                                 return $get('slug');
                             })
                             ->image()
@@ -53,10 +50,10 @@ class GalleryResource extends Resource
                             // ->panelAspectRatio('1:1')
                             // ->panelLayout('compact')
                             ->minSize(1)
-                            ->maxSize(2048)
+                            ->maxSize(2048),
                     ])
-                    ->columns(1)
-                
+                    ->columns(1),
+
             ]);
     }
 
@@ -66,8 +63,8 @@ class GalleryResource extends Resource
             ->columns([
                 TextColumn::make('id')->sortable(),
                 TextColumn::make('name')->searchable(),
-                TextColumn::make('createdBy.name')->description(fn(Gallery $record) => $record->created_at),
-                TextColumn::make('updatedBy.name')->description(fn(Gallery $record) => $record->updated_at),
+                TextColumn::make('createdBy.name')->description(fn (Gallery $record) => $record->created_at),
+                TextColumn::make('updatedBy.name')->description(fn (Gallery $record) => $record->updated_at),
             ])
             ->filters([
                 //
@@ -85,7 +82,7 @@ class GalleryResource extends Resource
     public static function getRelations(): array
     {
         return [
-            ImagesRelationManager::class
+            ImagesRelationManager::class,
         ];
     }
 

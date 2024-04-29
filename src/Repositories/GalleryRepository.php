@@ -5,13 +5,13 @@ namespace zaheensayyed\FilamentCms\Repositories;
 use zaheensayyed\FilamentCms\Models\Gallery;
 use zaheensayyed\FilamentCms\Models\GalleryImage;
 
-class GalleryRepository {
-
-    public static function storeImages(Gallery $gallery, Array $images): void
+class GalleryRepository
+{
+    public static function storeImages(Gallery $gallery, array $images): void
     {
 
-        foreach($images as $imagesId => $image){
-            
+        foreach ($images as $imagesId => $image) {
+
             $galleryImage = new GalleryImage;
             $galleryImage->created_by = auth()->id();
             $galleryImage->gallery_id = $gallery->id;
@@ -21,13 +21,13 @@ class GalleryRepository {
         }
     }
 
-    public static function mutateBeforeFill(Array $data): Array
+    public static function mutateBeforeFill(array $data): array
     {
         // $galleryImages = GalleryImage::where('gallery_id', $data['id'])->get();
         // foreach($galleryImages as $galleryImage){
         //     $data['images']["{$galleryImage->id}"] = $galleryImage->image_name;
         // }
-        
+
         // dd($data);
         return $data;
     }

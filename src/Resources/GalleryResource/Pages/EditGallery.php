@@ -4,14 +4,14 @@ namespace zaheensayyed\FilamentCms\Resources\GalleryResource\Pages;
 
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use zaheensayyed\FilamentCms\Repositories\GalleryRepository;
 use zaheensayyed\FilamentCms\Resources\GalleryResource;
 use zaheensayyed\FilamentCms\Traits\CommonResourceTrait;
-use zaheensayyed\FilamentCms\Repositories\GalleryRepository;
 
 class EditGallery extends EditRecord
 {
     use CommonResourceTrait;
-    
+
     protected static string $resource = GalleryResource::class;
 
     protected function getHeaderActions(): array

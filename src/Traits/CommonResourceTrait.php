@@ -4,10 +4,10 @@ namespace zaheensayyed\FilamentCms\Traits;
 
 use zaheensayyed\FilamentCms\Repositories\CommonRepository;
 
-trait CommonResourceTrait {
-
+trait CommonResourceTrait
+{
     public function mutateFormDataBeforeCreate(array $data): array
-    {    
+    {
         return CommonRepository::mutateDataForCreatedBy($data);
     }
 

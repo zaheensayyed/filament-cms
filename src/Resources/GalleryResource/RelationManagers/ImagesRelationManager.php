@@ -3,15 +3,13 @@
 namespace zaheensayyed\FilamentCms\Resources\GalleryResource\RelationManagers;
 
 use Filament\Forms;
-use Filament\Tables;
 use Filament\Forms\Form;
+use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
-use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Builder;
 use zaheensayyed\FilamentCms\Models\GalleryImage;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Resources\RelationManagers\RelationManager;
 
 class ImagesRelationManager extends RelationManager
 {
@@ -23,8 +21,9 @@ class ImagesRelationManager extends RelationManager
             ->schema([
                 Forms\Components\Placeholder::make('image_name')
                     ->label('Preview')
-                    ->content(function(GalleryImage $record){
+                    ->content(function (GalleryImage $record) {
                         $imagePath = "/storage/{$record->image_name}";
+
                         return new HtmlString("<img src='{$imagePath}'>");
                     }),
             ]);
@@ -36,8 +35,8 @@ class ImagesRelationManager extends RelationManager
             ->recordTitleAttribute('image')
             ->columns([
                 Tables\Columns\ImageColumn::make('image_name')->label('Image'),
-                TextColumn::make('createdBy.name')->description(fn(GalleryImage $record) => $record->created_at),
-                TextColumn::make('updatedBy.name')->description(fn(GalleryImage $record) => $record->updated_at),
+                TextColumn::make('createdBy.name')->description(fn (GalleryImage $record) => $record->created_at),
+                TextColumn::make('updatedBy.name')->description(fn (GalleryImage $record) => $record->updated_at),
             ])
             ->filters([
                 //
@@ -56,7 +55,8 @@ class ImagesRelationManager extends RelationManager
             ]);
     }
 
-    protected function canCreate(): bool{
+    protected function canCreate(): bool
+    {
         return false;
     }
 }

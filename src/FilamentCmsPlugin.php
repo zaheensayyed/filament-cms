@@ -2,11 +2,11 @@
 
 namespace zaheensayyed\FilamentCms;
 
-use Filament\Panel;
 use Filament\Contracts\Plugin;
-use zaheensayyed\FilamentCms\Resources\PageResource;
+use Filament\Panel;
 use zaheensayyed\FilamentCms\Resources\GalleryResource;
 use zaheensayyed\FilamentCms\Resources\NavigationResource;
+use zaheensayyed\FilamentCms\Resources\PageResource;
 
 class FilamentCmsPlugin implements Plugin
 {
@@ -21,7 +21,7 @@ class FilamentCmsPlugin implements Plugin
             ->resources([
                 NavigationResource::class,
                 PageResource::class,
-                GalleryResource::class
+                GalleryResource::class,
             ])
             ->pages([
                 // Settings::class,

@@ -2,9 +2,9 @@
 
 namespace zaheensayyed\FilamentCms\Resources\PageResource\Pages;
 
-use zaheensayyed\FilamentCms\Resources\PageResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use zaheensayyed\FilamentCms\Resources\PageResource;
 
 class ListPages extends ListRecords
 {
