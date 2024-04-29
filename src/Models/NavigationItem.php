@@ -21,6 +21,9 @@ class NavigationItem extends Model
         'parent_id',
         'name',
         'slug',
+        'level',
+        'type',
+        'type_id',
         'created_by',
         'updated_by',
     ];
@@ -33,5 +36,16 @@ class NavigationItem extends Model
     public function updatedBy()
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function childItems(){
+        return $this->hasMany(NavigationItem::class, 'parent_id');
+    }
+
+    public function page(){
+        if($this->type == NavigationItem::TYPE_PAGE){
+            return $this->belongsTo(Page::class, 'type_id');
+        }
+        return false;
     }
 }

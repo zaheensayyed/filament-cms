@@ -6,15 +6,14 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Page extends Model
+class GalleryImage extends Model
 {
     use HasFactory;
 
     public $fillable = [
-        'title',
-        'slug',
-        'body',
-        'cover_image',
+        'gallery_id',
+        'image_name',
+        'image_caption',
         'created_by',
         'updated_by'
     ];
@@ -25,5 +24,9 @@ class Page extends Model
 
     public function updatedBy(){
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function getImageUrlAttribute(){
+        return "/storage/{$this->image_name}";
     }
 }

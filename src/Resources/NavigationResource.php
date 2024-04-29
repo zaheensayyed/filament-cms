@@ -32,6 +32,7 @@ class NavigationResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('id'),
                 TextColumn::make('name'),
                 TextColumn::make('createdBy.name')->description(fn (Navigation $record) => $record->created_at),
                 TextColumn::make('updatedBy.name')->description(fn (Navigation $record) => $record->updated_at),

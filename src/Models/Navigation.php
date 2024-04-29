@@ -27,8 +27,7 @@ class Navigation extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    public function items()
-    {
-        return $this->hasMany(NavigationItem::class, 'navigation_id');
+    public function items(){
+        return $this->hasMany(NavigationItem::class, 'navigation_id')->where('level', 1);
     }
 }
