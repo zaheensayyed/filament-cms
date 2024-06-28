@@ -18,6 +18,7 @@ use Illuminate\Support\Str;
 use zaheensayyed\FilamentCms\Models\NavigationItem;
 use zaheensayyed\FilamentCms\Repositories\CommonRepository;
 use zaheensayyed\FilamentCms\Repositories\NavigationItemRepository;
+use Illuminate\Database\Eloquent\Model;
 
 class ItemsRelationManager extends RelationManager
 {
