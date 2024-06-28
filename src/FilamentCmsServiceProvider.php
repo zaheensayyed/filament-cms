@@ -58,9 +58,7 @@ class FilamentCmsServiceProvider extends PackageServiceProvider
         }
     }
 
-    public function packageRegistered(): void
-    {
-    }
+    public function packageRegistered(): void {}
 
     public function boot()
     {

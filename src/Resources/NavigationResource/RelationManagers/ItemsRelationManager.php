@@ -116,7 +116,7 @@ class ItemsRelationManager extends RelationManager
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->mutateRecordDataUsing(function (array $data, NavigationItem $record): array {
-                        return NavigationItemRepository::mutateBeforeFill($data, $record); 
+                        return NavigationItemRepository::mutateBeforeFill($data, $record);
                     })
                     ->using(function (RelationManager $livewire, Model $record, array $data) {
                         $data = CommonRepository::mutateDataForUpdatedBy($data);
