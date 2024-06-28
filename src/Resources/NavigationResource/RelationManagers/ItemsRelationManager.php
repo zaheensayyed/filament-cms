@@ -104,8 +104,10 @@ class ItemsRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
-                    ->using(function (array $data): array {
-                        return CommonRepository::mutateDataForCreatedBy($data);
+                    ->using(function (RelationManager $livewire, array $data): Model {
+                        $data = CommonRepository::mutateDataForCreatedBy($data);
+
+                        return $livewire->getRelationship()->create($data);
                     })
                     ->after(function ($data, NavigationItem $record) {
                         NavigationItemRepository::afterSave($data, $record);
@@ -114,10 +116,11 @@ class ItemsRelationManager extends RelationManager
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->mutateRecordDataUsing(function (array $data, NavigationItem $record): array {
-                        return NavigationItemRepository::mutateBeforeFill($data, $record);
+                        return NavigationItemRepository::mutateBeforeFill($data, $record); 
                     })
-                    ->using(function ($data, NavigationItem $record) {
-                        CommonRepository::mutateDataForUpdatedBy($data);
+                    ->using(function (RelationManager $livewire, Model $record, array $data) {
+                        $data = CommonRepository::mutateDataForUpdatedBy($data);
+                        $record->update($data);
                     })
                     ->after(function ($data, NavigationItem $record) {
                         NavigationItemRepository::afterSave($data, $record);
