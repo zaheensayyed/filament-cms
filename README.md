@@ -1,86 +1,52 @@
-# :package_description
+**Filament CMS: Accelerate CMS Development with Laravel and Filament**
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/:vendor_slug/:package_slug.svg?style=flat-square)](https://packagist.org/packages/:vendor_slug/:package_slug)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/:vendor_slug/:package_slug/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/:vendor_slug/:package_slug/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/:vendor_slug/:package_slug/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/:vendor_slug/:package_slug/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/:vendor_slug/:package_slug.svg?style=flat-square)](https://packagist.org/packages/:vendor_slug/:package_slug)
+Filament CMS is a powerful package designed to streamline content management system (CMS) development using Laravel and Filament. It offers a fast and flexible solution for building dynamic, user-friendly interfaces for managing content, empowering developers to create and deploy CMS applications with ease.
 
-<!--delete-->
----
-This repo can be used to scaffold a Filament plugin. Follow these steps to get started:
+Key features include:
 
-1. Press the "Use this template" button at the top of this repo to create a new repo with the contents of this filament-cms.
-2. Run "php ./configure.php" to run a script that will replace all placeholders throughout all the files.
-3. Make something great!
----
-<!--/delete-->
+*   **Page Management**: Effortlessly create, edit, and organize pages, with the ability to easily attach them to multilevel menus.
+    
+*   **Multilevel Menus**: Design and manage hierarchical menus that enhance navigation and improve user experience.
+    
+*   **Gallery Integration**: Incorporate galleries seamlessly into your CMS, enabling rich media management with minimal effort.
+    
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+Filament CMS is your go-to package for building robust, scalable, and feature-rich CMS applications using Laravel and Filament.
 
-## Installation
+**Installation**
+----------------
 
-You can install the package via composer:
+`composer require zaheensayyed/filament-cms`
 
-```bash
-composer require :vendor_slug/:package_slug
-```
+After installation, you may need to publish the configuration file:
 
-You can publish and run the migrations with:
+`php artisan vendor:publish --tag=filament-cms-config`
 
-```bash
-php artisan vendor:publish --tag=":package_slug-migrations"
-php artisan migrate
-```
+Usage
+-----
 
-You can publish the config file with:
+### Menu Example
 
-```bash
-php artisan vendor:publish --tag=":package_slug-config"
-```
+To retrieve and display a menu, use the following method:
 
-Optionally, you can publish the views using
+`FilamentCms::getMenu('Main menu');`
 
-```bash
-php artisan vendor:publish --tag=":package_slug-views"
-```
+This method returns the specified menu (e.g., "Main menu") with its hierarchical structure, allowing you to use it in your views or layouts.
 
-This is the contents of the published config file:
+### Create and Attach Pages to Menus
 
-```php
-return [
-];
-```
+Once a page is created through the CMS interface, it can be attached to a multilevel menu for easy navigation across your website or application.
 
-## Usage
+### Gallery Feature
 
-```php
-$variable = new zaheensayyed\FilamentCms();
-echo $variable->echoPhrase('Hello, zaheensayyed!');
-```
+Integrate galleries effortlessly by creating image galleries in the admin panel and attaching them to pages or posts, enhancing the visual richness of your CMS.
 
-## Testing
+Configuration
+-------------
 
-```bash
-composer test
-```
+You can configure various aspects of Filament CMS by modifying the published configuration file.
 
-## Changelog
+License
+-------
 
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
-
-## Contributing
-
-Please see [CONTRIBUTING](.github/CONTRIBUTING.md) for details.
-
-## Security Vulnerabilities
-
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
-
-## Credits
-
-- [:author_name](https://github.com/:author_username)
-- [All Contributors](../../contributors)
-
-## License
-
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+Filament CMS is open-sourced software licensed under the [MIT license](LICENSE.md).

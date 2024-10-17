@@ -1,6 +1,7 @@
 {
     "name": "zaheensayyed/filament-cms",
-    "description": ":package_description",
+    "description": "Filament CMS is a powerful package designed to streamline content management system (CMS) development using Laravel and Filament. It offers a fast and flexible solution for building dynamic, user-friendly interfaces for managing content, empowering developers to create and deploy CMS applications with ease. Key features include: Page Management – Effortlessly create, edit, and organize pages, with the ability to easily attach them to multilevel menus. Multilevel Menus – Design and manage hierarchical menus that enhance navigation and improve user experience. Gallery Integration – Incorporate galleries seamlessly into your CMS, enabling rich media management with minimal effort. Filament CMS is your go-to package for building robust, scalable, and feature-rich CMS applications using Laravel and Filament.",
+    "type": "library",
     "keywords": [
         "zaheensayyed",
         "laravel",
@@ -15,7 +16,7 @@
     "authors": [
         {
             "name": "zaheensayyed",
-            "email": "author@domain.com",
+            "email": "zaheen.sayyed@gmail.com",
             "role": "Developer"
         }
     ],
