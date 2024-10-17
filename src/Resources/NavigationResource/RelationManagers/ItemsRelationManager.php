@@ -40,9 +40,11 @@ class ItemsRelationManager extends RelationManager
                 Select::make('type')
                     ->options([
                         NavigationItem::TYPE_PAGE => 'Page',
+                        NavigationItem::TYPE_CUSTOM_URL => 'Custom URL',
                     ])
                     ->default(NavigationItem::TYPE_PAGE)
-                    ->required(),
+                    ->required()
+                    ->live(debounce: 300),
                 Select::make('type_id')
                     ->required()
                     ->options(function (Get $get) {
@@ -52,6 +54,24 @@ class ItemsRelationManager extends RelationManager
                         }
 
                         return [];
+                    })
+                    ->visible(function(callable $get){
+                        $type = $get('type');
+                        if($type){
+                            return NavigationItem::hasOptions($type);
+                        }
+                        return true;
+                    }),
+
+                TextInput::make('custom_url')
+                    
+                    ->required()
+                    ->visible(function(callable $get){
+                        $type = $get('type');
+                        if($type){
+                            return !NavigationItem::hasOptions($type);
+                        }
+                        return false;
                     }),
                 Grid::make('child_items_grid')
                     ->schema([
