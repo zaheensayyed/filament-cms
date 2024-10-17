@@ -91,7 +91,7 @@ class FilamentCmsServiceProvider extends PackageServiceProvider
         }
 
         // Testing
-        Testable::mixin(new TestsFilamentCms());
+        Testable::mixin(new TestsFilamentCms);
     }
 
     protected function getAssetPackageName(): ?string

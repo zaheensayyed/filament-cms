@@ -11,7 +11,9 @@ class NavigationItem extends Model
     use HasFactory;
 
     const TYPE_PAGE = 'page';
+
     const TYPE_CATEGORY_LIST = 'category_list';
+
     const TYPE_CUSTOM_URL = 'custom_url';
 
     public $fillable = [
@@ -47,7 +49,8 @@ class NavigationItem extends Model
         return $this->belongsTo(Page::class, 'type_id');
     }
 
-    public static function hasOptions($type){
-        return (self::TYPE_CUSTOM_URL == $type) ? false : true;
+    public static function hasOptions($type)
+    {
+        return ($type == self::TYPE_CUSTOM_URL) ? false : true;
     }
 }

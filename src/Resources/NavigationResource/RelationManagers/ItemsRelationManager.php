@@ -55,22 +55,24 @@ class ItemsRelationManager extends RelationManager
 
                         return [];
                     })
-                    ->visible(function(callable $get){
+                    ->visible(function (callable $get) {
                         $type = $get('type');
-                        if($type){
+                        if ($type) {
                             return NavigationItem::hasOptions($type);
                         }
+
                         return true;
                     }),
 
                 TextInput::make('custom_url')
-                    
+
                     ->required()
-                    ->visible(function(callable $get){
+                    ->visible(function (callable $get) {
                         $type = $get('type');
-                        if($type){
-                            return !NavigationItem::hasOptions($type);
+                        if ($type) {
+                            return ! NavigationItem::hasOptions($type);
                         }
+
                         return false;
                     }),
                 Grid::make('child_items_grid')

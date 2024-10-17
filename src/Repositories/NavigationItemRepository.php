@@ -14,7 +14,7 @@ class NavigationItemRepository
             if (isset($childItems['child_id'])) {
                 $navChildItem = NavigationItem::find($childItems['child_id']);
             } else {
-                $navChildItem = new NavigationItem();
+                $navChildItem = new NavigationItem;
             }
 
             $navChildItem->navigation_id = $record->navigation_id;
