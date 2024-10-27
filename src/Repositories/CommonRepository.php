@@ -2,8 +2,9 @@
 
 namespace zaheensayyed\FilamentCms\Repositories;
 
-use zaheensayyed\FilamentCms\Models\NavigationItem;
 use zaheensayyed\FilamentCms\Models\Page;
+use zaheensayyed\FilamentCms\Models\Gallery;
+use zaheensayyed\FilamentCms\Models\NavigationItem;
 
 class CommonRepository
 {
@@ -27,6 +28,11 @@ class CommonRepository
         switch ($type) {
             case NavigationItem::TYPE_PAGE:
                 $options = Page::pluck('title', 'id')->toArray();
+
+                break;
+
+            case NavigationItem::TYPE_GALLERY:
+                $options = Gallery::pluck('name', 'id')->toArray();
 
                 break;
 

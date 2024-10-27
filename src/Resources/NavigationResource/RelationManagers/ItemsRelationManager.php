@@ -41,6 +41,7 @@ class ItemsRelationManager extends RelationManager
                     ->options([
                         NavigationItem::TYPE_PAGE => 'Page',
                         NavigationItem::TYPE_CUSTOM_URL => 'Custom URL',
+                        NavigationItem::TYPE_GALLERY => 'Photo Gallery',
                     ])
                     ->default(NavigationItem::TYPE_PAGE)
                     ->required()
