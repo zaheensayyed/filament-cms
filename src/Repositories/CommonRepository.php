@@ -2,9 +2,9 @@
 
 namespace zaheensayyed\FilamentCms\Repositories;
 
-use zaheensayyed\FilamentCms\Models\Page;
 use zaheensayyed\FilamentCms\Models\Gallery;
 use zaheensayyed\FilamentCms\Models\NavigationItem;
+use zaheensayyed\FilamentCms\Models\Page;
 
 class CommonRepository
 {
