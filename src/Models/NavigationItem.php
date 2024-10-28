@@ -11,12 +11,10 @@ class NavigationItem extends Model
     use HasFactory;
 
     const TYPE_PAGE = 'page';
-
     const TYPE_CATEGORY_LIST = 'category_list';
-
     const TYPE_GALLERY = 'gallery';
-
     const TYPE_CUSTOM_URL = 'custom_url';
+    const TYPE_STATIC = 'static';
 
     public $fillable = [
         'navigation_id',
@@ -53,12 +51,6 @@ class NavigationItem extends Model
         }
 
         return $this->belongsTo(Page::class);
-
-        // return $this->belongsTo(Page::class, 'type_id')->when($this->type == self::TYPE_PAGE, function ($query) {
-        //     return $query;
-        // }, function ($query) {
-        //     return $query->select([]); // Return an empty relationship
-        // });
     }
 
     public function gallery()
@@ -68,11 +60,6 @@ class NavigationItem extends Model
         }
 
         return $this->belongsTo(Gallery::class);
-        // return $this->belongsTo(Gallery::class, 'type_id')->when($this->type == self::TYPE_GALLERY, function ($query) {
-        //     return $query;
-        // }, function ($query) {
-        //     return $query->select([]); // Return an empty relationship
-        // });
     }
 
     public static function hasOptions($type)
@@ -89,5 +76,15 @@ class NavigationItem extends Model
         }
 
         return $this->name;
+    }
+
+    public static function getAllTypeOptions()
+    {
+        return [
+                NavigationItem::TYPE_PAGE => 'Page',
+                NavigationItem::TYPE_CUSTOM_URL => 'Custom URL',
+                NavigationItem::TYPE_GALLERY => 'Photo Gallery',
+                NavigationItem::TYPE_STATIC => 'Static',
+        ];
     }
 }

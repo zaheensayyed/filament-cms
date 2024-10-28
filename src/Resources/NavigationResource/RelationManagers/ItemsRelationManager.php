@@ -38,11 +38,7 @@ class ItemsRelationManager extends RelationManager
                 TextInput::make('slug')
                     ->required(),
                 Select::make('type')
-                    ->options([
-                        NavigationItem::TYPE_PAGE => 'Page',
-                        NavigationItem::TYPE_CUSTOM_URL => 'Custom URL',
-                        NavigationItem::TYPE_GALLERY => 'Photo Gallery',
-                    ])
+                    ->options(NavigationItem::getAllTypeOptions())
                     ->default(NavigationItem::TYPE_PAGE)
                     ->required()
                     ->live(debounce: 300),
@@ -90,9 +86,8 @@ class ItemsRelationManager extends RelationManager
                                 TextInput::make('child_slug')
                                     ->required(),
                                 Select::make('child_type')
-                                    ->options([
-                                        NavigationItem::TYPE_PAGE => 'Page',
-                                    ])
+                                    ->live()
+                                    ->options(NavigationItem::getAllTypeOptions())
                                     ->default(NavigationItem::TYPE_PAGE)
                                     ->required(),
                                 Select::make('child_type_id')
