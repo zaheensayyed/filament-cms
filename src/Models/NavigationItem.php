@@ -11,9 +11,13 @@ class NavigationItem extends Model
     use HasFactory;
 
     const TYPE_PAGE = 'page';
+
     const TYPE_CATEGORY_LIST = 'category_list';
+
     const TYPE_GALLERY = 'gallery';
+
     const TYPE_CUSTOM_URL = 'custom_url';
+
     const TYPE_STATIC = 'static';
 
     public $fillable = [
@@ -81,10 +85,10 @@ class NavigationItem extends Model
     public static function getAllTypeOptions()
     {
         return [
-                NavigationItem::TYPE_PAGE => 'Page',
-                NavigationItem::TYPE_CUSTOM_URL => 'Custom URL',
-                NavigationItem::TYPE_GALLERY => 'Photo Gallery',
-                NavigationItem::TYPE_STATIC => 'Static',
+            NavigationItem::TYPE_PAGE => 'Page',
+            NavigationItem::TYPE_CUSTOM_URL => 'Custom URL',
+            NavigationItem::TYPE_GALLERY => 'Photo Gallery',
+            NavigationItem::TYPE_STATIC => 'Static',
         ];
     }
 }

@@ -38,6 +38,7 @@ class CommonRepository
 
             case NavigationItem::TYPE_STATIC:
                 $options = ['static' => 'static'];
+
                 break;
 
             default:
