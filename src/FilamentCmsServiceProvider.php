@@ -32,21 +32,18 @@ class FilamentCmsServiceProvider extends PackageServiceProvider
         $package->name(static::$name)
             ->hasCommands($this->getCommands())
             ->hasInstallCommand(function (InstallCommand $command) {
+                // Package migrations are loaded straight from the vendor folder
+                // (see packageBooted), so install only needs to run them.
                 $command
                     ->publishConfigFile()
-                    ->publishMigrations()
                     ->askToRunMigrations()
-                    ->askToStarRepoOnGitHub(':vendor_slug/:package_slug');
+                    ->askToStarRepoOnGitHub('zaheensayyed/filament-cms');
             });
 
         $configFileName = $package->shortName();
 
         if (file_exists($package->basePath("/../config/{$configFileName}.php"))) {
             $package->hasConfigFile();
-        }
-
-        if (file_exists($package->basePath('/../database/migrations'))) {
-            $package->hasMigrations($this->getMigrations());
         }
 
         if (file_exists($package->basePath('/../resources/lang'))) {
@@ -60,13 +57,10 @@ class FilamentCmsServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void {}
 
-    public function boot()
-    {
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
-    }
-
     public function packageBooted(): void
     {
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+
         // Asset Registration
         FilamentAsset::register(
             $this->getAssets(),
@@ -143,15 +137,5 @@ class FilamentCmsServiceProvider extends PackageServiceProvider
     protected function getScriptData(): array
     {
         return [];
-    }
-
-    /**
-     * @return array<string>
-     */
-    protected function getMigrations(): array
-    {
-        return [
-            'create_filament-cms_table',
-        ];
     }
 }
