@@ -9,6 +9,7 @@ use zaheensayyed\FilamentCms\Resources\GalleryResource;
 use zaheensayyed\FilamentCms\Resources\NavigationResource;
 use zaheensayyed\FilamentCms\Resources\PageResource;
 use zaheensayyed\FilamentCms\Settings\Groups\CompanyInfoGroup;
+use zaheensayyed\FilamentCms\Settings\Groups\SeoDefaultsGroup;
 use zaheensayyed\FilamentCms\Settings\SettingsGroup;
 
 class FilamentCmsPlugin implements Plugin
@@ -20,6 +21,7 @@ class FilamentCmsPlugin implements Plugin
      */
     protected array $settingsGroups = [
         CompanyInfoGroup::class,
+        SeoDefaultsGroup::class,
     ];
 
     public function getId(): string
