@@ -13,6 +13,7 @@ Merged-but-untagged changes go under **Unreleased**; the README describes the la
 - Contact form endpoint, `<x-filament-cms::contact-form />`, Contact Form settings tab and
   read-only Contact Submissions resource
 - Documentation in `docs/`
+- Docs guard workflow, PR template and README contract (`.github/CONTRIBUTING.md`)
 
 ### Changed
 - `getMenu()` builds menus in 2 queries and caches them (see [UPGRADE.md](UPGRADE.md))

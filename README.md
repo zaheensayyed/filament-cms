@@ -3,6 +3,9 @@
 Pages, multi-level menus, galleries, SEO tags, site settings and a contact form for Laravel
 sites, managed in a [Filament](https://filamentphp.com) panel and rendered with plain Blade.
 
+> **Note:** this README describes the upcoming **v1.1.0** (see [Unreleased](CHANGELOG.md#unreleased)).
+> For the current release, read the [v1.0.6 README](https://github.com/zaheensayyed/filament-cms/blob/v1.0.6/README.md).
+
 | PHP | Laravel | Filament |
 | --- | --- | --- |
 | 8.1+ | 10.x | 3.x |
@@ -14,8 +17,8 @@ sites, managed in a [Filament](https://filamentphp.com) panel and rendered with 
 - **Catch-all route** that serves pages and galleries by slug (works with `route:cache`)
 - **Galleries** with image uploads on any filesystem disk
 - **SEO component**: title, description, canonical, robots, Open Graph, Twitter, JSON-LD
-- **Settings** page with Company Info, SEO Defaults and Contact Form tabs, extensible
-- **Contact form** with SMTP delivery through your mailer, spam protection and a submission log
+- **Settings** page with Company Info, SEO Defaults and Contact Form tabs, extensible; read with `FilamentCms::setting()` ([key reference](docs/settings.md#key-reference))
+- **Contact form** (`<x-filament-cms::contact-form />`, route `filament-cms.contact.submit`) with SMTP delivery through your mailer, spam protection and a submission log in the panel
 
 ## Installation
 
@@ -36,6 +39,8 @@ $panel->plugins([
 ```
 
 Serve CMS pages by slug on the frontend by adding `FILAMENT_CMS_ROUTES=true` to `.env`.
+
+**Upgrading from 1.0.x?** Menus, routing and relations changed: follow [UPGRADE.md](UPGRADE.md).
 
 ## Usage
 
