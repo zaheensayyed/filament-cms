@@ -87,6 +87,18 @@ A JSON request (`Accept: application/json`) gets `201 {"message": "..."}` instea
 Spam protection: the honeypot field plus a rate limit of 5 submissions per minute per IP
 (`filament-cms.contact_form.rate_limit`). No captcha.
 
+## Reading the submission log
+
+Every submission is listed in the panel under **Contact Submissions** (the menu badge counts
+the last 7 days). Open one to read the full message, the visitor's IP and user agent, and the
+mail status. Filter by mail status (sent / failed / pending) or by date range. When a row
+shows **failed**, the reason (e.g. an SMTP error) is in its Mail error field; fix the mail
+configuration and contact the visitor by the email in the row. Submissions can be deleted
+one by one or in bulk; they can't be created or edited.
+
+> **Performance notes:** the component runs no queries of its own (it only reads cached
+> settings). A submission costs 1 insert plus 1 update for the mail status.
+
 ## Config (`config/filament-cms.php`)
 
 ```php
