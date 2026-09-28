@@ -11,7 +11,10 @@ trait CommonResourceTrait
         return CommonRepository::mutateDataForCreatedBy($data);
     }
 
-    protected function mutateFormDataBeforeFill(array $data): array
+    /**
+     * Runs on the Edit page right before the record is updated.
+     */
+    protected function mutateFormDataBeforeSave(array $data): array
     {
         return CommonRepository::mutateDataForUpdatedBy($data);
     }

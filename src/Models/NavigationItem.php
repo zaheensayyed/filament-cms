@@ -3,8 +3,11 @@
 namespace zaheensayyed\FilamentCms\Models;
 
 use App\Models\User;
+use Closure;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+use zaheensayyed\FilamentCms\FilamentCms;
 
 class NavigationItem extends Model
 {
@@ -33,6 +36,17 @@ class NavigationItem extends Model
         'updated_by',
     ];
 
+    /**
+     * @var array<string, Closure(NavigationItem): ?string>
+     */
+    protected static array $urlResolvers = [];
+
+    protected static function booted(): void
+    {
+        static::saved(fn () => FilamentCms::forgetMenuCache());
+        static::deleted(fn () => FilamentCms::forgetMenuCache());
+    }
+
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -45,25 +59,51 @@ class NavigationItem extends Model
 
     public function childItems()
     {
-        return $this->hasMany(NavigationItem::class, 'parent_id');
+        return $this->hasMany(NavigationItem::class, 'parent_id')->orderBy('id');
     }
 
+    /**
+     * The linked page. Only meaningful when type is "page" — use linkedPage() to get
+     * null for every other type.
+     */
+    public function typePage()
+    {
+        return $this->belongsTo(Page::class, 'type_id');
+    }
+
+    /**
+     * The linked gallery. Only meaningful when type is "gallery" — use linkedGallery()
+     * to get null for every other type.
+     */
+    public function typeGallery()
+    {
+        return $this->belongsTo(Gallery::class, 'type_id');
+    }
+
+    /**
+     * @deprecated Use typePage(). Kept for backward compatibility.
+     */
     public function page()
     {
-        if ($this->type == self::TYPE_PAGE) {
-            return $this->belongsTo(Page::class, 'type_id');
-        }
-
-        return $this->belongsTo(Page::class);
+        return $this->typePage();
     }
 
+    /**
+     * @deprecated Use typeGallery(). Kept for backward compatibility.
+     */
     public function gallery()
     {
-        if ($this->type == self::TYPE_GALLERY) {
-            return $this->belongsTo(Gallery::class, 'type_id');
-        }
+        return $this->typeGallery();
+    }
 
-        return $this->belongsTo(Gallery::class);
+    public function linkedPage(): ?Page
+    {
+        return $this->type === self::TYPE_PAGE ? $this->typePage : null;
+    }
+
+    public function linkedGallery(): ?Gallery
+    {
+        return $this->type === self::TYPE_GALLERY ? $this->typeGallery : null;
     }
 
     public static function hasOptions($type)
@@ -73,13 +113,58 @@ class NavigationItem extends Model
 
     public function getTitleAttribute()
     {
-        if ($this->page) {
-            return $this->page->title;
-        } elseif ($this->gallery) {
-            return $this->gallery->name;
+        return $this->linkedPage()?->title
+            ?? $this->linkedGallery()?->name
+            ?? $this->name;
+    }
+
+    /**
+     * Frontend href for this item, whatever its type:
+     * - custom_url: the stored custom_url (relative paths are made absolute)
+     * - page / gallery / category_list: the CMS route for the item's slug
+     * - static: url($slug), for routes the consumer app defines itself
+     *
+     * Override per type with NavigationItem::resolveUrlUsing().
+     */
+    public function getUrlAttribute(): ?string
+    {
+        if (isset(static::$urlResolvers[$this->type])) {
+            return call_user_func(static::$urlResolvers[$this->type], $this);
         }
 
-        return $this->name;
+        return match ($this->type) {
+            self::TYPE_CUSTOM_URL => static::normalizeUrl($this->custom_url),
+            self::TYPE_STATIC => url($this->slug),
+            default => FilamentCms::url($this->slug),
+        };
+    }
+
+    /**
+     * @param  Closure(NavigationItem): ?string  $callback
+     */
+    public static function resolveUrlUsing(string $type, ?Closure $callback): void
+    {
+        if ($callback === null) {
+            unset(static::$urlResolvers[$type]);
+
+            return;
+        }
+
+        static::$urlResolvers[$type] = $callback;
+    }
+
+    protected static function normalizeUrl(?string $url): ?string
+    {
+        if (blank($url)) {
+            return null;
+        }
+
+        // Absolute URLs, protocol-relative URLs, anchors, mailto:, tel: etc. are used as-is.
+        if (Str::startsWith($url, ['#', '//']) || preg_match('/^[a-z][a-z0-9+.-]*:/i', $url)) {
+            return $url;
+        }
+
+        return url($url);
     }
 
     public static function getAllTypeOptions()

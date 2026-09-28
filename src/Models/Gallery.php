@@ -5,6 +5,7 @@ namespace zaheensayyed\FilamentCms\Models;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use zaheensayyed\FilamentCms\FilamentCms;
 
 class Gallery extends Model
 {
@@ -17,6 +18,13 @@ class Gallery extends Model
         'created_by',
         'updated_by',
     ];
+
+    protected static function booted(): void
+    {
+        // Menu titles/links come from pages and galleries, so cached menus must be rebuilt.
+        static::saved(fn () => FilamentCms::forgetMenuCache());
+        static::deleted(fn () => FilamentCms::forgetMenuCache());
+    }
 
     public function createdBy()
     {

@@ -61,6 +61,10 @@ class FilamentCmsServiceProvider extends PackageServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 
+        if (config('filament-cms.routes.enabled')) {
+            $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+        }
+
         // Asset Registration
         FilamentAsset::register(
             $this->getAssets(),

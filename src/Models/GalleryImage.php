@@ -5,6 +5,7 @@ namespace zaheensayyed\FilamentCms\Models;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class GalleryImage extends Model
 {
@@ -28,8 +29,15 @@ class GalleryImage extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    public function getImageUrlAttribute()
+    /**
+     * Uses the same disk Filament uploads to, so S3 and other non-default disks work.
+     */
+    public function getImageUrlAttribute(): ?string
     {
-        return "/storage/{$this->image_name}";
+        if (blank($this->image_name)) {
+            return null;
+        }
+
+        return Storage::disk(config('filament.default_filesystem_disk'))->url($this->image_name);
     }
 }

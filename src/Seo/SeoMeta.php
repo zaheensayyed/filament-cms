@@ -35,7 +35,7 @@ class SeoMeta
     /**
      * Tell the package where CMS pages live on the frontend, e.g.
      * SeoMeta::resolvePageUrlUsing(fn (Page $page) => route('pages.show', $page->slug)).
-     * Defaults to url($page->slug).
+     * Defaults to FilamentCms::url($page->slug) (the catch-all route when enabled).
      */
     public static function resolvePageUrlUsing(?Closure $callback): void
     {
@@ -95,7 +95,7 @@ class SeoMeta
 
         return static::$pageUrlResolver
             ? (string) call_user_func(static::$pageUrlResolver, $this->page)
-            : url($this->page->slug);
+            : FilamentCms::url($this->page->slug);
     }
 
     public function robots(): string

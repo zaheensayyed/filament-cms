@@ -17,7 +17,7 @@ class CommonRepository
 
     public static function mutateDataForUpdatedBy(array $data): array
     {
-        $data['created_by'] = auth()->id();
+        $data['updated_by'] = auth()->id();
 
         return $data;
     }
