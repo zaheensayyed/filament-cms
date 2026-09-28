@@ -30,4 +30,27 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Contact form
+    |--------------------------------------------------------------------------
+    |
+    | POST endpoint used by <x-filament-cms::contact-form /> (route name
+    | "filament-cms.contact.submit"). Recipients, subject prefix, success message
+    | and the on/off switch live in the panel: Settings → Contact Form.
+    | Mail goes through the app's default mailer (config/mail.php).
+    |
+    */
+
+    'contact_form' => [
+        'enabled' => true,
+
+        'path' => 'filament-cms/contact',
+
+        'middleware' => ['web'],
+
+        // Submissions allowed per minute per IP address.
+        'rate_limit' => 5,
+    ],
+
 ];

@@ -5,10 +5,12 @@ namespace zaheensayyed\FilamentCms;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use zaheensayyed\FilamentCms\Pages\Settings;
+use zaheensayyed\FilamentCms\Resources\ContactSubmissionResource;
 use zaheensayyed\FilamentCms\Resources\GalleryResource;
 use zaheensayyed\FilamentCms\Resources\NavigationResource;
 use zaheensayyed\FilamentCms\Resources\PageResource;
 use zaheensayyed\FilamentCms\Settings\Groups\CompanyInfoGroup;
+use zaheensayyed\FilamentCms\Settings\Groups\ContactFormGroup;
 use zaheensayyed\FilamentCms\Settings\Groups\SeoDefaultsGroup;
 use zaheensayyed\FilamentCms\Settings\SettingsGroup;
 
@@ -22,6 +24,7 @@ class FilamentCmsPlugin implements Plugin
     protected array $settingsGroups = [
         CompanyInfoGroup::class,
         SeoDefaultsGroup::class,
+        ContactFormGroup::class,
     ];
 
     public function getId(): string
@@ -36,6 +39,7 @@ class FilamentCmsPlugin implements Plugin
                 NavigationResource::class,
                 PageResource::class,
                 GalleryResource::class,
+                ContactSubmissionResource::class,
             ])
             ->pages([
                 Settings::class,

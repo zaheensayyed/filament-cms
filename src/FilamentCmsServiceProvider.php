@@ -8,12 +8,18 @@ use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Http\Request;
+use Illuminate\Mail\Events\MessageSent;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Features\SupportTesting\Testable;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use zaheensayyed\FilamentCms\Commands\FilamentCmsCommand;
+use zaheensayyed\FilamentCms\Models\ContactFormSubmission;
 use zaheensayyed\FilamentCms\Testing\TestsFilamentCms;
 
 class FilamentCmsServiceProvider extends PackageServiceProvider
@@ -65,6 +71,8 @@ class FilamentCmsServiceProvider extends PackageServiceProvider
             $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
         }
 
+        $this->bootContactForm();
+
         // Asset Registration
         FilamentAsset::register(
             $this->getAssets(),
@@ -90,6 +98,27 @@ class FilamentCmsServiceProvider extends PackageServiceProvider
 
         // Testing
         Testable::mixin(new TestsFilamentCms);
+    }
+
+    protected function bootContactForm(): void
+    {
+        RateLimiter::for('filament-cms-contact', function (Request $request) {
+            return Limit::perMinute((int) config('filament-cms.contact_form.rate_limit', 5))->by($request->ip());
+        });
+
+        // The mailer fires MessageSent once the transport accepted the message
+        // (inline on the sync queue, or later in a queue worker).
+        Event::listen(MessageSent::class, function (MessageSent $event) {
+            $submission = $event->data['submission'] ?? null;
+
+            if ($submission instanceof ContactFormSubmission) {
+                $submission->markAsSent();
+            }
+        });
+
+        if (config('filament-cms.contact_form.enabled', true)) {
+            $this->loadRoutesFrom(__DIR__ . '/../routes/contact.php');
+        }
     }
 
     protected function getAssetPackageName(): ?string
