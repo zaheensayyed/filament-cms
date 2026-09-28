@@ -2,6 +2,7 @@
 
 namespace zaheensayyed\FilamentCms\Resources;
 
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
@@ -20,10 +21,16 @@ use zaheensayyed\FilamentCms\Models\Page;
 use zaheensayyed\FilamentCms\Resources\PageResource\Pages;
 use zaheensayyed\FilamentCms\Seo\SeoFields;
 use zaheensayyed\FilamentCms\Seo\SeoMeta;
+use zaheensayyed\FilamentCms\Shield\CmsPermissions;
 
-class PageResource extends Resource
+class PageResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Page::class;
+
+    public static function getPermissionPrefixes(): array
+    {
+        return CmsPermissions::RESOURCE_PREFIXES;
+    }
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 

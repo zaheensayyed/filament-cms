@@ -10,6 +10,7 @@ Everything is edited in the Filament panel and read on the frontend through the
 | **Galleries & images** | Galleries → Images | `FilamentCms::getGallery($slug)` |
 | **Settings** | Settings (tabs) | `FilamentCms::setting($key, $default)` |
 | **Contact submissions** | Contact Submissions | `<x-filament-cms::contact-form />` |
+| **Users & roles** | Users, Roles | panel only, see [roles](roles.md) |
 
 ## Pages
 

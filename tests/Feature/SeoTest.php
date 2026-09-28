@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
@@ -72,7 +71,6 @@ it('renders defaults only when there is no page', function () {
 });
 
 it('saves SEO fields from the page form', function () {
-    $this->actingAs((new User)->forceFill(['id' => 1]));
 
     Livewire::test(CreatePage::class)
         ->fillForm([
@@ -92,7 +90,6 @@ it('saves SEO fields from the page form', function () {
 });
 
 it('validates canonical url and structured data on the page form', function () {
-    $this->actingAs((new User)->forceFill(['id' => 1]));
 
     Livewire::test(CreatePage::class)
         ->fillForm([

@@ -7,6 +7,7 @@
 | `filament-cms-config` | `filament-cms.php` (catch-all route, contact form endpoint) | `config/` |
 | `filament-cms-views` | SEO and contact form components, email templates, default page/gallery views | `resources/views/vendor/filament-cms/` |
 | `filament-cms-translations` | Language file | `lang/vendor/filament-cms/` |
+| `filament-shield-config`, `permission-config` | Shield and spatie/laravel-permission config (published by the installer) | `config/` |
 
 ```bash
 php artisan vendor:publish --tag=filament-cms-views

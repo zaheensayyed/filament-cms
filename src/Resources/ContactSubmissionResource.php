@@ -2,6 +2,7 @@
 
 namespace zaheensayyed\FilamentCms\Resources;
 
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms\Components\DatePicker;
 use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\Section;
@@ -21,9 +22,14 @@ use zaheensayyed\FilamentCms\Resources\ContactSubmissionResource\Pages;
 /**
  * Read-only log of contact form submissions: view and delete only.
  */
-class ContactSubmissionResource extends Resource
+class ContactSubmissionResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = ContactFormSubmission::class;
+
+    public static function getPermissionPrefixes(): array
+    {
+        return ['view', 'view_any', 'delete', 'delete_any'];
+    }
 
     protected static ?string $navigationIcon = 'heroicon-o-inbox';
 

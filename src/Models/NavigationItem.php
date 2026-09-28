@@ -2,7 +2,6 @@
 
 namespace zaheensayyed\FilamentCms\Models;
 
-use App\Models\User;
 use Closure;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -49,12 +48,12 @@ class NavigationItem extends Model
 
     public function createdBy()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(config('auth.providers.users.model'), 'created_by');
     }
 
     public function updatedBy()
     {
-        return $this->belongsTo(User::class, 'updated_by');
+        return $this->belongsTo(config('auth.providers.users.model'), 'updated_by');
     }
 
     public function childItems()

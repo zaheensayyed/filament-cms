@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Livewire\Livewire;
@@ -231,7 +230,7 @@ describe('audit columns', function () {
     it('stamps updated_by when a page is edited and keeps created_by', function () {
         $page = makePage('About', 'about');
 
-        $this->actingAs((new User)->forceFill(['id' => 7]));
+        $this->actingAs($editor = $this->createUser('admin'));
 
         Livewire::test(EditPage::class, ['record' => $page->getRouteKey()])
             ->fillForm(['title' => 'About KBI'])
@@ -241,13 +240,13 @@ describe('audit columns', function () {
         expect($page->refresh())
             ->title->toBe('About KBI')
             ->created_by->toBe(1)
-            ->updated_by->toBe(7);
+            ->updated_by->toBe($editor->id);
     });
 
     it('stamps updated_by when a navigation is edited', function () {
         $menu = Navigation::create(['name' => 'Main', 'description' => '-', 'created_by' => 1]);
 
-        $this->actingAs((new User)->forceFill(['id' => 9]));
+        $this->actingAs($editor = $this->createUser('admin'));
 
         Livewire::test(EditNavigation::class, ['record' => $menu->getRouteKey()])
             ->fillForm(['description' => 'Header menu'])
@@ -256,6 +255,6 @@ describe('audit columns', function () {
 
         expect($menu->refresh())
             ->created_by->toBe(1)
-            ->updated_by->toBe(9);
+            ->updated_by->toBe($editor->id);
     });
 });

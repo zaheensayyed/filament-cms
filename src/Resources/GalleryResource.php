@@ -2,6 +2,7 @@
 
 namespace zaheensayyed\FilamentCms\Resources;
 
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Textarea;
@@ -16,12 +17,18 @@ use Illuminate\Support\Str;
 use zaheensayyed\FilamentCms\Models\Gallery;
 use zaheensayyed\FilamentCms\Resources\GalleryResource\Pages;
 use zaheensayyed\FilamentCms\Resources\GalleryResource\RelationManagers\ImagesRelationManager;
+use zaheensayyed\FilamentCms\Shield\CmsPermissions;
 
 // use zaheensayyed\FilamentCms\Resources\GalleryResource\RelationManagers;
 
-class GalleryResource extends Resource
+class GalleryResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Gallery::class;
+
+    public static function getPermissionPrefixes(): array
+    {
+        return CmsPermissions::RESOURCE_PREFIXES;
+    }
 
     protected static ?string $navigationIcon = 'heroicon-o-photo';
 

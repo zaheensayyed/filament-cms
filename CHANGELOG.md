@@ -13,6 +13,8 @@ Merged-but-untagged changes go under **Unreleased**; the README describes the la
 - Contact form endpoint, `<x-filament-cms::contact-form />`, Contact Form settings tab and
   read-only Contact Submissions resource
 - Documentation in `docs/`
+- Role-based access with Filament Shield: package policies, Users resource, `admin` and
+  `content_manager` roles, `filament-cms:roles` command, Shield setup in `filament-cms:install`
 - Docs guard workflow, PR template and README contract (`.github/CONTRIBUTING.md`)
 
 ### Changed
@@ -24,6 +26,7 @@ Merged-but-untagged changes go under **Unreleased**; the README describes the la
 - `updated_by` is now stamped on edit
 - `filament-cms:install` command is registered and runs the package migrations
 - `FilamentCmsTheme` plugin works on Filament 3
+- `createdBy` / `updatedBy` relations use the configured user model instead of `App\Models\User`
 
 ## 1.0.6
 

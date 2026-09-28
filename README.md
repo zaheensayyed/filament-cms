@@ -18,13 +18,20 @@ sites, managed in a [Filament](https://filamentphp.com) panel and rendered with 
 - **Galleries** with image uploads on any filesystem disk
 - **SEO component**: title, description, canonical, robots, Open Graph, Twitter, JSON-LD
 - **Settings** page with Company Info, SEO Defaults and Contact Form tabs, extensible; read with `FilamentCms::setting()` ([key reference](docs/settings.md#key-reference))
+- **Users & roles** with Filament Shield: `admin` and `content_manager` roles out of the box ([docs](docs/roles.md))
 - **Contact form** (`<x-filament-cms::contact-form />`, route `filament-cms.contact.submit`) with SMTP delivery through your mailer, spam protection and a submission log in the panel
 
 ## Installation
 
 ```bash
 composer require zaheensayyed/filament-cms
+```
+
+Add `use Spatie\Permission\Traits\HasRoles;` to your `User` model, then:
+
+```bash
 php artisan filament-cms:install
+php artisan filament-cms:roles --admin=you@example.com
 php artisan storage:link
 ```
 
@@ -75,7 +82,7 @@ Full guide in [docs/](docs/README.md): [installation](docs/installation.md) ·
 [concepts](docs/concepts.md) · [menus](docs/menus.md) ·
 [routing & pages](docs/routing-and-pages.md) · [galleries](docs/galleries.md) ·
 [SEO](docs/seo.md) · [contact form](docs/contact-form.md) · [settings](docs/settings.md) ·
-[customization](docs/customization.md)
+[roles](docs/roles.md) · [customization](docs/customization.md)
 
 **Upgrading?** Read [UPGRADE.md](UPGRADE.md). Release notes: [CHANGELOG.md](CHANGELOG.md).
 

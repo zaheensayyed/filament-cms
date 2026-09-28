@@ -21,12 +21,38 @@ php artisan make:filament-user
 
 ```bash
 composer require zaheensayyed/filament-cms
+```
+
+Add the `HasRoles` trait to your user model (the CMS uses roles and permissions, see
+[Users, roles & permissions](roles.md)):
+
+```php
+// app/Models/User.php
+use Spatie\Permission\Traits\HasRoles;
+
+class User extends Authenticatable
+{
+    use HasRoles;
+    // ...
+}
+```
+
+Then run the installer:
+
+```bash
 php artisan filament-cms:install
 ```
 
-The install command publishes `config/filament-cms.php` and offers to run the migrations
-(pages, navigations, galleries, settings, contact submissions). Answer **yes**, or run
-`php artisan migrate` yourself later.
+It publishes `config/filament-cms.php` plus the Shield and permission config and migrations,
+runs the migrations (pages, navigations, galleries, settings, contact submissions, roles and
+permissions) and creates the `admin` and `content_manager` roles. It is safe to run again on
+upgrades.
+
+Give your own account the admin role:
+
+```bash
+php artisan filament-cms:roles --admin=you@example.com
+```
 
 Galleries and share images are stored on Filament's default disk (`public`), so link it once:
 
@@ -51,8 +77,9 @@ public function panel(Panel $panel): Panel
 }
 ```
 
-The panel now has **Pages**, **Navigations**, **Galleries**, **Contact Submissions** and a
-**Settings** page.
+The panel now has **Pages**, **Navigations**, **Galleries**, **Contact Submissions**, a
+**Settings** page, and **Users** and **Roles** for admins. The plugin also registers Filament
+Shield, so don't add `FilamentShieldPlugin` yourself.
 
 ### Optional: CMS theme
 
@@ -83,3 +110,4 @@ FILAMENT_CMS_ROUTES=true
 - [Concepts](concepts.md): what pages, navigations, galleries and settings are
 - [Rendering menus in Blade](menus.md)
 - [Routing & rendering pages](routing-and-pages.md)
+- [Users, roles & permissions](roles.md)

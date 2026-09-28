@@ -1,5 +1,55 @@
 # Upgrade Guide
 
+## Roles & permissions with Filament Shield (CMS-7)
+
+The panel now checks permissions. **Until you do the steps below, nobody (including you) can
+open Pages, Navigations, Galleries, Settings or Contact Submissions.** Do them right after
+updating the package.
+
+1. Add the `HasRoles` trait to your user model:
+
+   ```php
+   use Spatie\Permission\Traits\HasRoles;
+
+   class User extends Authenticatable
+   {
+       use HasRoles;
+   }
+   ```
+
+2. Re-run the installer. It publishes the Shield and permission config and migrations, runs
+   the migrations and creates the permissions plus the `admin` and `content_manager` roles.
+   It doesn't touch your existing config or data:
+
+   ```bash
+   php artisan filament-cms:install
+   ```
+
+3. Give your existing users roles. At least one admin first:
+
+   ```bash
+   php artisan filament-cms:roles --admin=you@example.com
+   ```
+
+   Then assign the rest in the panel under **Users** (log in as the admin), or in code:
+
+   ```php
+   User::where('email', 'editor@example.com')->first()->assignRole('content_manager');
+   ```
+
+4. If your panel provider registers `FilamentShieldPlugin` itself, you can remove it:
+   `FilamentCmsPlugin` registers it. Keeping it is harmless.
+
+Notes:
+
+- The package ships policies for its own models. If your app already has a `UserPolicy` or a
+  Shield-generated `RolePolicy`, those keep being used.
+- The `admin` role is Shield's super-admin role (`filament-shield.super_admin.name` is set from
+  `filament-cms.shield.admin_role`). If you already use Shield with a `super_admin` role, either
+  rename it to `admin` or set `filament-cms.shield.admin_role` to `super_admin`.
+- `createdBy` / `updatedBy` relations now use `config('auth.providers.users.model')` instead of
+  `App\Models\User`.
+
 ## Frontend API refactor (CMS-3)
 
 Run the new migration after updating. It adds a nullable, unique `key` column to

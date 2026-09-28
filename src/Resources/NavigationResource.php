@@ -2,6 +2,7 @@
 
 namespace zaheensayyed\FilamentCms\Resources;
 
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -15,10 +16,16 @@ use Illuminate\Support\Str;
 use zaheensayyed\FilamentCms\Models\Navigation;
 use zaheensayyed\FilamentCms\Resources\NavigationResource\Pages;
 use zaheensayyed\FilamentCms\Resources\NavigationResource\RelationManagers\ItemsRelationManager;
+use zaheensayyed\FilamentCms\Shield\CmsPermissions;
 
-class NavigationResource extends Resource
+class NavigationResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Navigation::class;
+
+    public static function getPermissionPrefixes(): array
+    {
+        return CmsPermissions::RESOURCE_PREFIXES;
+    }
 
     protected static ?string $navigationIcon = 'heroicon-o-queue-list';
 

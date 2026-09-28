@@ -11,11 +11,12 @@ time; each page stands on its own afterwards.
 6. [SEO](seo.md): `<x-filament-cms::seo />` and the fallback chain
 7. [Contact form](contact-form.md): component, endpoint, settings, submission log
 8. [Settings](settings.md): `FilamentCms::setting()` and the key reference
-9. [Customization & upgrading](customization.md): publishable files, extension points, upgrades
+9. [Users, roles & permissions](roles.md): Shield, default roles, permission reference
+10. [Customization & upgrading](customization.md): publishable files, extension points, upgrades
 
 ## Minimal site checklist
 
-- [ ] Package installed, migrations run, `FilamentCmsPlugin` registered ([installation](installation.md))
+- [ ] Package installed, `HasRoles` on the user model, `FilamentCmsPlugin` registered, admin role assigned ([installation](installation.md))
 - [ ] `FILAMENT_CMS_ROUTES=true` and a `cms.page` view ([routing](routing-and-pages.md))
 - [ ] Layout with `<x-filament-cms::seo />` in `<head>` and the navbar partial ([menus](menus.md), [SEO](seo.md))
 - [ ] Contact page with `<x-filament-cms::contact-form />` ([contact form](contact-form.md))

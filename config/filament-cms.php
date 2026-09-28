@@ -53,4 +53,20 @@ return [
         'rate_limit' => 5,
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Roles & permissions (Filament Shield)
+    |--------------------------------------------------------------------------
+    |
+    | Roles seeded by `php artisan filament-cms:install` / `filament-cms:roles`.
+    | The admin role is Shield's super-admin role: it passes every permission
+    | check, including resources added later.
+    |
+    */
+
+    'shield' => [
+        'admin_role' => 'admin',
+        'content_manager_role' => 'content_manager',
+    ],
+
 ];
