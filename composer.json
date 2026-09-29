@@ -22,6 +22,7 @@
     ],
     "require": {
         "php": "^8.2",
+        "doctrine/dbal": "^3.5.1",
         "filament/filament": "^3.0",
         "filament/forms": "^3.0",
         "filament/tables": "^3.0",
