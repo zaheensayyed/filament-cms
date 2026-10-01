@@ -13,7 +13,7 @@ sites, managed in a [Filament](https://filamentphp.com) panel and rendered with 
 ## Features
 
 - **Pages** with a rich-text editor and per-page SEO fields
-- **Menus** with 2 levels, linking to pages, galleries, custom URLs or your own routes; cached
+- **Menus** with 2 levels, linking to pages, galleries, custom URLs or your own routes; Heroicon icons on child items; cached
 - **Catch-all route** that serves pages and galleries by slug (works with `route:cache`)
 - **Galleries** with image uploads on any filesystem disk
 - **SEO component**: title, description, canonical, robots, Open Graph, Twitter, JSON-LD

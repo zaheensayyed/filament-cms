@@ -33,6 +33,9 @@ Each item has a `type` that decides what it links to:
 | `static` | a route your app defines | `url($slug)` |
 
 Child slugs include the parent: a "Team" item under "About" has the slug `about/team`.
+Child items can also have an **icon**: any [Heroicon](https://heroicons.com) in any style,
+picked from a searchable dropdown in the panel and stored as its Blade name
+(`heroicon-o-users`). See [rendering icons](menus.md#child-item-icons).
 
 ## Galleries and images
 
@@ -70,6 +73,7 @@ erDiagram
         string type "page, gallery, custom_url, static"
         string type_id
         string custom_url
+        string icon "Heroicon name, child items"
     }
     pages {
         bigint id

@@ -16,6 +16,9 @@ Merged-but-untagged changes go under **Unreleased**; the README describes the la
 - Role-based access with Filament Shield: package policies, Users resource, `admin` and
   `content_manager` roles, `filament-cms:roles` command, Shield setup in `filament-cms:install`
 - Docs guard workflow, PR template and README contract (`.github/CONTRIBUTING.md`)
+- Icon dropdown for child navigation items with every Heroicon (outline, solid, mini, micro),
+  searchable with previews; `navigation_items.icon` column, `$item->icon` and
+  `Support\Heroicons::options()`
 
 ### Changed
 - `getMenu()` builds menus in 2 queries and caches them (see [UPGRADE.md](UPGRADE.md))

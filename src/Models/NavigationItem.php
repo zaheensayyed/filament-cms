@@ -31,6 +31,7 @@ class NavigationItem extends Model
         'type',
         'type_id',
         'custom_url',
+        'icon',
         'created_by',
         'updated_by',
     ];

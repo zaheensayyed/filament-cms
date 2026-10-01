@@ -1,5 +1,14 @@
 # Upgrade Guide
 
+## Child navigation item icons (CMS-8)
+
+Run the new migration after updating. It adds a nullable `icon` column to `navigation_items`;
+existing items keep working without an icon:
+
+```bash
+php artisan migrate
+```
+
 ## Roles & permissions with Filament Shield (CMS-7)
 
 The panel now checks permissions. **Until you do the steps below, nobody (including you) can

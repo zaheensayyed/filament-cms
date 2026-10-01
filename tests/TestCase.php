@@ -15,6 +15,7 @@ use Filament\Support\SupportServiceProvider;
 use Filament\Tables\TablesServiceProvider;
 use Filament\Widgets\WidgetsServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Foundation\Testing\Concerns\InteractsWithViews;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
@@ -28,6 +29,7 @@ use zaheensayyed\FilamentCms\Tests\Fixtures\User;
 
 class TestCase extends Orchestra
 {
+    use InteractsWithViews;
     use RefreshDatabase;
 
     protected function setUp(): void

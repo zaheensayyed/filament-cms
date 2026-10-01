@@ -19,6 +19,7 @@ use Illuminate\Support\Str;
 use zaheensayyed\FilamentCms\Models\NavigationItem;
 use zaheensayyed\FilamentCms\Repositories\CommonRepository;
 use zaheensayyed\FilamentCms\Repositories\NavigationItemRepository;
+use zaheensayyed\FilamentCms\Support\Heroicons;
 
 class ItemsRelationManager extends RelationManager
 {
@@ -100,6 +101,7 @@ class ItemsRelationManager extends RelationManager
 
                                         return [];
                                     }),
+                                static::iconSelect('child_icon'),
                             ])
                             ->columns(2),
                     ])
@@ -151,6 +153,25 @@ class ItemsRelationManager extends RelationManager
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    /**
+     * Searchable dropdown of every Heroicon (all four styles) with a preview. Search runs on
+     * the server so the ~1,300 SVGs are never sent to the browser at once.
+     */
+    public static function iconSelect(string $name): Select
+    {
+        return Select::make($name)
+            ->label('Icon')
+            ->placeholder('No icon')
+            ->searchable()
+            ->allowHtml()
+            ->optionsLimit(50)
+            ->options(fn (): array => Heroicons::withPreviews(Heroicons::search(null, 50)))
+            ->getSearchResultsUsing(fn (string $search): array => Heroicons::withPreviews(Heroicons::search($search, 50)))
+            ->getOptionLabelUsing(fn (?string $value): ?string => Heroicons::previewLabel($value))
+            ->in(fn (): array => Heroicons::names())
+            ->helperText('Any Heroicon: outline, solid, mini or micro. Type to search, e.g. "home" or "arrow solid".');
     }
 
     private static function createdBy(array $data): array
