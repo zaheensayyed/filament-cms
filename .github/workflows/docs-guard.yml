@@ -1,0 +1,29 @@
+name: Docs guard
+
+# Fails a PR that changes the public surface (src/, config/, routes/, migrations,
+# Blade components) without touching README.md or docs/. Add the "skip-docs"
+# label for internal-only changes; the check re-runs when labels change.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+
+jobs:
+  docs-updated:
+    name: README / docs updated
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check README and docs were updated
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          SKIP_DOCS: ${{ contains(github.event.pull_request.labels.*.name, 'skip-docs') }}
+        run: bash bin/check-docs-updated.sh "$BASE_SHA" "$HEAD_SHA"

@@ -22,9 +22,7 @@ class ImagesRelationManager extends RelationManager
                 Forms\Components\Placeholder::make('image_name')
                     ->label('Preview')
                     ->content(function (GalleryImage $record) {
-                        $imagePath = "/storage/{$record->image_name}";
-
-                        return new HtmlString("<img src='{$imagePath}'>");
+                        return new HtmlString('<img src="' . e($record->image_url) . '">');
                     }),
             ]);
     }

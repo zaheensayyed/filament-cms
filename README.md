@@ -1,52 +1,91 @@
-**Filament CMS: Accelerate CMS Development with Laravel and Filament**
+# Filament CMS
 
-Filament CMS is a powerful package designed to streamline content management system (CMS) development using Laravel and Filament. It offers a fast and flexible solution for building dynamic, user-friendly interfaces for managing content, empowering developers to create and deploy CMS applications with ease.
+Pages, multi-level menus, galleries, SEO tags, site settings and a contact form for Laravel
+sites, managed in a [Filament](https://filamentphp.com) panel and rendered with plain Blade.
 
-Key features include:
+> **Note:** this README describes the upcoming **v1.1.0** (see [Unreleased](CHANGELOG.md#unreleased)).
+> For the current release, read the [v1.0.6 README](https://github.com/zaheensayyed/filament-cms/blob/v1.0.6/README.md).
 
-*   **Page Management**: Effortlessly create, edit, and organize pages, with the ability to easily attach them to multilevel menus.
-    
-*   **Multilevel Menus**: Design and manage hierarchical menus that enhance navigation and improve user experience.
-    
-*   **Gallery Integration**: Incorporate galleries seamlessly into your CMS, enabling rich media management with minimal effort.
-    
+| PHP | Laravel | Filament |
+| --- | --- | --- |
+| 8.1+ | 10.x | 3.x |
 
-Filament CMS is your go-to package for building robust, scalable, and feature-rich CMS applications using Laravel and Filament.
+## Features
 
-**Installation**
-----------------
+- **Pages** with a rich-text editor and per-page SEO fields
+- **Menus** with 2 levels, linking to pages, galleries, custom URLs or your own routes; Heroicon icons on child items; cached
+- **Catch-all route** that serves pages and galleries by slug (works with `route:cache`)
+- **Galleries** with image uploads on any filesystem disk
+- **SEO component**: title, description, canonical, robots, Open Graph, Twitter, JSON-LD
+- **Settings** page with Company Info, SEO Defaults and Contact Form tabs, extensible; read with `FilamentCms::setting()` ([key reference](docs/settings.md#key-reference))
+- **Users & roles** with Filament Shield: `admin` and `content_manager` roles out of the box ([docs](docs/roles.md))
+- **Contact form** (`<x-filament-cms::contact-form />`, route `filament-cms.contact.submit`) with SMTP delivery through your mailer, spam protection and a submission log in the panel
 
-`composer require zaheensayyed/filament-cms`
+## Installation
 
-After installation, you may need to publish the configuration file:
+```bash
+composer require zaheensayyed/filament-cms
+```
 
-`php artisan vendor:publish --tag=filament-cms-config`
+Add `use Spatie\Permission\Traits\HasRoles;` to your `User` model, then:
 
-Usage
------
+```bash
+php artisan filament-cms:install
+php artisan filament-cms:roles --admin=you@example.com
+php artisan storage:link
+```
 
-### Menu Example
+Register the plugin in your panel provider:
 
-To retrieve and display a menu, use the following method:
+```php
+use zaheensayyed\FilamentCms\FilamentCmsPlugin;
 
-`FilamentCms::getMenu('Main menu');`
+$panel->plugins([
+    FilamentCmsPlugin::make(),
+]);
+```
 
-This method returns the specified menu (e.g., "Main menu") with its hierarchical structure, allowing you to use it in your views or layouts.
+Serve CMS pages by slug on the frontend by adding `FILAMENT_CMS_ROUTES=true` to `.env`.
 
-### Create and Attach Pages to Menus
+**Upgrading from 1.0.x?** Menus, routing and relations changed: follow [UPGRADE.md](UPGRADE.md).
 
-Once a page is created through the CMS interface, it can be attached to a multilevel menu for easy navigation across your website or application.
+## Usage
 
-### Gallery Feature
+```blade
+<head>
+    <x-filament-cms::seo :page="$page ?? null" />
+</head>
+<body>
+    <nav>
+        @foreach (FilamentCms::getMenu('main-menu') as $item)
+            <a href="{{ $item->url }}">{{ $item->title }}</a>
+        @endforeach
+    </nav>
 
-Integrate galleries effortlessly by creating image galleries in the admin panel and attaching them to pages or posts, enhancing the visual richness of your CMS.
+    <x-filament-cms::contact-form />
 
-Configuration
--------------
+    <footer>{{ FilamentCms::setting('company.email') }}</footer>
+</body>
+```
 
-You can configure various aspects of Filament CMS by modifying the published configuration file.
+```php
+FilamentCms::getMenu('main-menu');        // cached menu items with url, title, childItems
+FilamentCms::getPage('about-us');         // ?Page
+FilamentCms::getGallery('event-2017');    // ?Gallery with images
+FilamentCms::resolveSlug('about/team');   // Page, Gallery or null
+FilamentCms::setting('company.email');    // settings value, cached
+```
 
-License
--------
+## Documentation
 
-Filament CMS is open-sourced software licensed under the [MIT license](LICENSE.md).
+Full guide in [docs/](docs/README.md): [installation](docs/installation.md) ·
+[concepts](docs/concepts.md) · [menus](docs/menus.md) ·
+[routing & pages](docs/routing-and-pages.md) · [galleries](docs/galleries.md) ·
+[SEO](docs/seo.md) · [contact form](docs/contact-form.md) · [settings](docs/settings.md) ·
+[roles](docs/roles.md) · [customization](docs/customization.md)
+
+**Upgrading?** Read [UPGRADE.md](UPGRADE.md). Release notes: [CHANGELOG.md](CHANGELOG.md).
+
+## License
+
+MIT, see [LICENSE.md](LICENSE.md).

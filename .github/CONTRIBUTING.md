@@ -52,4 +52,45 @@ If the project maintainer has any additional requirements, you will find them li
 
 - **Send coherent history** - Make sure each individual commit in your pull request is meaningful. If you had to make multiple intermediate commits while developing, please [squash them](https://www.git-scm.com/book/en/v2/Git-Tools-Rewriting-History#Changing-Multiple-Commit-Messages) before submitting.
 
+## Documentation contract
+
+The README is a **landing page**, not the manual. It must always contain, and only contain:
+
+| README.md | docs/ |
+| --- | --- |
+| Requirements matrix (PHP / Laravel / Filament) | Step-by-step guides per feature |
+| Install steps and plugin registration | Full Blade examples, copy-paste partials |
+| One minimal end-to-end usage example | Settings key reference, config options |
+| Feature list (one line per feature) | Caching and performance notes |
+| Links into `docs/`, `CHANGELOG.md`, `UPGRADE.md` | Customization and extension points |
+
+Rules:
+
+1. **Same PR, same change.** A PR that adds, renames or removes anything public (facade method,
+   Blade component, artisan command, settings key, publish tag, config key, migration) updates
+   `README.md` (if it changes the feature list, install steps or the usage example) and the
+   relevant `docs/` page in that PR. The PR template has a checkbox for it and the
+   **Docs guard** workflow (`bin/check-docs-updated.sh`) fails PRs that touch `src/`, `config/`,
+   `routes/`, migrations or Blade components without touching `README.md` or `docs/`.
+   Internal-only changes (refactors, tests, CI) get the `skip-docs` label instead.
+2. **README = latest tagged release.** Merged-but-untagged changes are listed under
+   **Unreleased** in `CHANGELOG.md`. Tag the release as soon as a feature PR that changed the
+   README is merged; until then the README header says which unreleased version it describes.
+3. **No dead APIs.** When an API is renamed or removed, delete every README/docs snippet using
+   it in the same PR and add the migration path to `UPGRADE.md`.
+4. **Snippets are real code.** Every snippet in the README and docs must run as written; check
+   them against a fresh Laravel app before tagging a release that changes them.
+
+Run the guard locally before pushing:
+
+```bash
+bin/check-docs-updated.sh origin/main HEAD
+```
+
+## Releasing
+
+1. Move the **Unreleased** entries in `CHANGELOG.md` under the new version heading.
+2. Remove the "unreleased" note from the top of `README.md`.
+3. Tag and publish the GitHub release (the Update Changelog workflow records the release notes).
+
 **Happy coding**!

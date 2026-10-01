@@ -15,6 +15,7 @@ class NavigationItemRepository
                 $navChildItem = NavigationItem::find($childItems['child_id']);
             } else {
                 $navChildItem = new NavigationItem;
+                $navChildItem->created_by = auth()->id();
             }
 
             $navChildItem->navigation_id = $record->navigation_id;
@@ -24,7 +25,7 @@ class NavigationItemRepository
             $navChildItem->level = 2;
             $navChildItem->type = $childItems['child_type'];
             $navChildItem->type_id = $childItems['child_type_id'];
-            $navChildItem->created_by = auth()->id();
+            $navChildItem->icon = $childItems['child_icon'] ?? null;
             $navChildItem->updated_by = auth()->id();
             $navChildItem->save();
         }
@@ -42,6 +43,7 @@ class NavigationItemRepository
             $item['child_slug'] = $childItem->slug;
             $item['child_type'] = $childItem->type;
             $item['child_type_id'] = $childItem->type_id;
+            $item['child_icon'] = $childItem->icon;
             $item['child_id'] = $childItem->id;
 
             $data['child_menu_items'][$childItem->id] = $item;
