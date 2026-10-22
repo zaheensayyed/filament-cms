@@ -6,14 +6,16 @@ use Closure;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use zaheensayyed\FilamentCms\FilamentCms;
+use zaheensayyed\FilamentCms\Models\Client;
 use zaheensayyed\FilamentCms\Models\Page;
 use zaheensayyed\FilamentCms\Models\Post;
 
 /**
- * Resolves every SEO value for a page or blog post (or for a non-CMS route when $page is null).
+ * Resolves every SEO value for a page, blog post or client (or for a non-CMS route when $page is null).
  *
  * Each value follows the same chain: page/post field → "SEO Defaults" setting → hardcoded fallback.
- * Blog posts also fall back to their excerpt (description) and cover image (share image).
+ * Pages and clients also fall back to their description, blog posts to their excerpt (meta
+ * description); posts to their cover image and clients to their first image (share image).
  */
 class SeoMeta
 {
@@ -32,7 +34,7 @@ class SeoMeta
 
     protected static ?Closure $pageUrlResolver = null;
 
-    public function __construct(protected Page | Post | null $page = null) {}
+    public function __construct(protected Page | Post | Client | null $page = null) {}
 
     /**
      * Tell the package where CMS pages live on the frontend, e.g.
@@ -67,7 +69,8 @@ class SeoMeta
             return $metaTitle;
         }
 
-        $title = $this->pageValue('title');
+        // Clients have a name instead of a title.
+        $title = $this->pageValue('title') ?? $this->pageValue('name');
 
         if ($title === null) {
             return $this->siteName();
@@ -83,7 +86,7 @@ class SeoMeta
     public function description(): ?string
     {
         return $this->pageValue('meta_description')
-            ?? ($this->page instanceof Post ? $this->pageValue('excerpt') : null)
+            ?? $this->pageValue($this->page instanceof Post ? 'excerpt' : 'description')
             ?? $this->setting('default_description');
     }
 
@@ -101,6 +104,10 @@ class SeoMeta
             return FilamentCms::postUrl($this->page);
         }
 
+        if ($this->page instanceof Client) {
+            return FilamentCms::clientsUrl();
+        }
+
         return static::$pageUrlResolver
             ? (string) call_user_func(static::$pageUrlResolver, $this->page)
             : FilamentCms::url($this->page->slug);
@@ -116,6 +123,7 @@ class SeoMeta
         return $this->pageValue('og_title')
             ?? $this->pageValue('meta_title')
             ?? $this->pageValue('title')
+            ?? $this->pageValue('name')
             ?? $this->siteName();
     }
 
@@ -128,6 +136,7 @@ class SeoMeta
     {
         $path = $this->pageValue('og_image')
             ?? ($this->page instanceof Post ? $this->pageValue('cover_image') : null)
+            ?? ($this->page instanceof Client ? $this->page->cover_image_url : null)
             ?? $this->setting('default_og_image');
 
         if ($path === null) {

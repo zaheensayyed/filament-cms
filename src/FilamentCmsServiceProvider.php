@@ -23,6 +23,7 @@ use Spatie\Permission\PermissionRegistrar;
 use Spatie\Permission\Traits\HasRoles;
 use zaheensayyed\FilamentCms\Commands\FilamentCmsCommand;
 use zaheensayyed\FilamentCms\Commands\SyncRolesCommand;
+use zaheensayyed\FilamentCms\Models\Client;
 use zaheensayyed\FilamentCms\Models\ContactFormSubmission;
 use zaheensayyed\FilamentCms\Models\Gallery;
 use zaheensayyed\FilamentCms\Models\GalleryImage;
@@ -30,6 +31,7 @@ use zaheensayyed\FilamentCms\Models\Navigation;
 use zaheensayyed\FilamentCms\Models\NavigationItem;
 use zaheensayyed\FilamentCms\Models\Page;
 use zaheensayyed\FilamentCms\Models\Post;
+use zaheensayyed\FilamentCms\Policies\ClientPolicy;
 use zaheensayyed\FilamentCms\Policies\ContactFormSubmissionPolicy;
 use zaheensayyed\FilamentCms\Policies\GalleryImagePolicy;
 use zaheensayyed\FilamentCms\Policies\GalleryPolicy;
@@ -102,6 +104,10 @@ class FilamentCmsServiceProvider extends PackageServiceProvider
             $this->loadRoutesFrom(__DIR__ . '/../routes/blog.php');
         }
 
+        if (config('filament-cms.clients.routes')) {
+            $this->loadRoutesFrom(__DIR__ . '/../routes/clients.php');
+        }
+
         if (config('filament-cms.routes.enabled')) {
             $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
         }
@@ -144,6 +150,7 @@ class FilamentCmsServiceProvider extends PackageServiceProvider
 
         Gate::policy(Page::class, PagePolicy::class);
         Gate::policy(Post::class, PostPolicy::class);
+        Gate::policy(Client::class, ClientPolicy::class);
         Gate::policy(Navigation::class, NavigationPolicy::class);
         Gate::policy(NavigationItem::class, NavigationItemPolicy::class);
         Gate::policy(Gallery::class, GalleryPolicy::class);

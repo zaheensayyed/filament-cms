@@ -13,6 +13,8 @@ class Page extends Model
     public $fillable = [
         'title',
         'slug',
+        'description',
+        'icon',
         'body',
         'cover_image',
         'meta_title',

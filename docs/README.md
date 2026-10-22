@@ -9,11 +9,12 @@ time; each page stands on its own afterwards.
 4. [Routing & rendering pages](routing-and-pages.md): catch-all route, `resolveSlug()`, page views
 5. [Blog](blog.md): posts, scheduling, `/blog` routes, `getPosts()`
 6. [Galleries](galleries.md): `getGallery()`, `image_url`, disks
-7. [SEO](seo.md): `<x-filament-cms::seo />` and the fallback chain
-8. [Contact form](contact-form.md): component, endpoint, settings, submission log
-9. [Settings](settings.md): `FilamentCms::setting()` and the key reference
-10. [Users, roles & permissions](roles.md): Shield, default roles, permission reference
-11. [Customization & upgrading](customization.md): publishable files, extension points, upgrades
+7. [Clients](clients.md): images, featured clients on the home page, `/clients` routes
+8. [SEO](seo.md): `<x-filament-cms::seo />` and the fallback chain
+9. [Contact form](contact-form.md): component, endpoint, settings, submission log
+10. [Settings](settings.md): `FilamentCms::setting()` and the key reference
+11. [Users, roles & permissions](roles.md): Shield, default roles, permission reference
+12. [Customization & upgrading](customization.md): publishable files, extension points, upgrades
 
 ## Minimal site checklist
 

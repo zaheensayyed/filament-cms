@@ -20,6 +20,7 @@ use zaheensayyed\FilamentCms\Models\NavigationItem;
 use zaheensayyed\FilamentCms\Models\Page;
 use zaheensayyed\FilamentCms\Models\Post;
 use zaheensayyed\FilamentCms\Pages\Settings;
+use zaheensayyed\FilamentCms\Resources\ClientResource;
 use zaheensayyed\FilamentCms\Resources\ContactSubmissionResource;
 use zaheensayyed\FilamentCms\Resources\ContactSubmissionResource\Pages\ListContactSubmissions;
 use zaheensayyed\FilamentCms\Resources\GalleryResource;
@@ -64,6 +65,7 @@ describe('default roles', function () {
             ->and(Permission::pluck('name')->all())->toContain(
                 'view_any_page',
                 'create_post',
+                'update_client',
                 'delete_any_navigation',
                 'update_gallery',
                 'page_Settings',
@@ -75,12 +77,12 @@ describe('default roles', function () {
             );
     });
 
-    it('seeds content_manager with exactly CRUD on pages, posts, menus, galleries and read-only submissions', function () {
+    it('seeds content_manager with exactly CRUD on pages, posts, menus, galleries, clients and read-only submissions', function () {
         $crud = fn (string $entity) => array_map(fn ($p) => "{$p}_{$entity}", ['view', 'view_any', 'create', 'update', 'delete', 'delete_any']);
 
         expect(Role::findByName('content_manager')->permissions->pluck('name')->sort()->values()->all())
             ->toBe(collect([
-                ...$crud('page'), ...$crud('post'), ...$crud('navigation'), ...$crud('gallery'),
+                ...$crud('page'), ...$crud('post'), ...$crud('navigation'), ...$crud('gallery'), ...$crud('client'),
                 'view_contact::submission', 'view_any_contact::submission',
             ])->sort()->values()->all());
     });
@@ -241,7 +243,7 @@ describe('admin', function () {
 
         expect(ContactFormSubmission::count())->toBe(0);
 
-        foreach ([PageResource::class, PostResource::class, NavigationResource::class, GalleryResource::class, UserResource::class, RoleResource::class] as $resource) {
+        foreach ([PageResource::class, PostResource::class, NavigationResource::class, GalleryResource::class, ClientResource::class, UserResource::class, RoleResource::class] as $resource) {
             expect($resource::canViewAny())->toBeTrue()
                 ->and($resource::canCreate())->toBe($resource !== NavigationResource::class);
         }
@@ -294,7 +296,7 @@ describe('relation managers respect the parent permissions', function () {
     it('denies a user without roles everywhere', function () {
         $this->actingAs($this->createUser());
 
-        foreach ([PageResource::class, PostResource::class, NavigationResource::class, GalleryResource::class, ContactSubmissionResource::class, UserResource::class, RoleResource::class] as $resource) {
+        foreach ([PageResource::class, PostResource::class, NavigationResource::class, GalleryResource::class, ClientResource::class, ContactSubmissionResource::class, UserResource::class, RoleResource::class] as $resource) {
             expect($resource::canViewAny())->toBeFalse();
         }
 

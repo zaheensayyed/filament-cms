@@ -8,6 +8,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use zaheensayyed\FilamentCms\Models\Client;
 use zaheensayyed\FilamentCms\Models\Gallery;
 use zaheensayyed\FilamentCms\Models\NavigationItem;
 use zaheensayyed\FilamentCms\Models\Page;
@@ -28,6 +29,8 @@ class FilamentCms
     public const BLOG_INDEX_ROUTE = 'filament-cms.blog.index';
 
     public const BLOG_SHOW_ROUTE = 'filament-cms.blog.show';
+
+    public const CLIENTS_INDEX_ROUTE = 'filament-cms.clients.index';
 
     /**
      * Top-level items of a menu, looked up by its stable key (or, for backward
@@ -168,6 +171,47 @@ class FilamentCms
         }
 
         return url(trim(config('filament-cms.blog.prefix', 'blog') . '/' . $slug, '/'));
+    }
+
+    /**
+     * Published clients in the panel's order.
+     *
+     * @return Collection<int, Client>
+     */
+    public static function getClients(): Collection
+    {
+        return Client::published()->ordered()->get();
+    }
+
+    /**
+     * Published clients marked as featured, e.g. for the home page.
+     *
+     * @return Collection<int, Client>
+     */
+    public static function featuredClients(?int $limit = null): Collection
+    {
+        return Client::published()->featured()->ordered()->when($limit, fn ($query) => $query->take($limit))->get();
+    }
+
+    /**
+     * A published client by slug; unpublished clients return null.
+     */
+    public static function getClient(string $slug): ?Client
+    {
+        return Client::published()->where('slug', trim($slug, '/'))->first();
+    }
+
+    /**
+     * Frontend URL of the clients list: the package's clients route when it is enabled,
+     * otherwise url(prefix).
+     */
+    public static function clientsUrl(): string
+    {
+        if (Route::has(static::CLIENTS_INDEX_ROUTE)) {
+            return route(static::CLIENTS_INDEX_ROUTE);
+        }
+
+        return url(trim((string) config('filament-cms.clients.prefix', 'clients'), '/'));
     }
 
     /**

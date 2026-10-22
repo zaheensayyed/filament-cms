@@ -6,10 +6,15 @@ use zaheensayyed\FilamentCms\Models\NavigationItem;
 
 class NavigationItemRepository
 {
+    /**
+     * Creates, updates and deletes the child items of $record to match the form's
+     * "child_menu_items" repeater: a child removed from the repeater is deleted.
+     */
     public static function afterSave(array $data, NavigationItem $record): void
     {
+        $keptIds = [];
 
-        foreach ($data['child_menu_items'] as $childItems) {
+        foreach ($data['child_menu_items'] ?? [] as $childItems) {
 
             if (isset($childItems['child_id'])) {
                 $navChildItem = NavigationItem::find($childItems['child_id']);
@@ -28,8 +33,17 @@ class NavigationItemRepository
             $navChildItem->icon = $childItems['child_icon'] ?? null;
             $navChildItem->updated_by = auth()->id();
             $navChildItem->save();
+
+            $keptIds[] = $navChildItem->id;
         }
 
+        // One by one, so the model events run (menu cache, deeper children).
+        NavigationItem::query()
+            ->where('parent_id', $record->id)
+            ->whereNotIn('id', $keptIds)
+            ->get()
+            ->each
+            ->delete();
     }
 
     public static function mutateBeforeFill(array $data, NavigationItem $record): array

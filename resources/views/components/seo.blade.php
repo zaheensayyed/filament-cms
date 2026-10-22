@@ -1,8 +1,8 @@
-{{-- Pass a CMS page as :page or a blog post as :post (or :page). --}}
-@props(['page' => null, 'post' => null])
+{{-- Pass a CMS page as :page, a blog post as :post or a client as :client (any of them also works as :page). --}}
+@props(['page' => null, 'post' => null, 'client' => null])
 
 @php
-    $seo = new \zaheensayyed\FilamentCms\Seo\SeoMeta($post ?? $page);
+    $seo = new \zaheensayyed\FilamentCms\Seo\SeoMeta($post ?? $client ?? $page);
     $publishedTime = $seo->publishedTime();
     $title = $seo->title();
     $description = $seo->description();

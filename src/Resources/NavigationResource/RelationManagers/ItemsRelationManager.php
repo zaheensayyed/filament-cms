@@ -156,22 +156,11 @@ class ItemsRelationManager extends RelationManager
     }
 
     /**
-     * Searchable dropdown of every Heroicon (all four styles) with a preview. Search runs on
-     * the server so the ~1,300 SVGs are never sent to the browser at once.
+     * Searchable Heroicon dropdown with previews (see Heroicons::select()).
      */
     public static function iconSelect(string $name): Select
     {
-        return Select::make($name)
-            ->label('Icon')
-            ->placeholder('No icon')
-            ->searchable()
-            ->allowHtml()
-            ->optionsLimit(50)
-            ->options(fn (): array => Heroicons::withPreviews(Heroicons::search(null, 50)))
-            ->getSearchResultsUsing(fn (string $search): array => Heroicons::withPreviews(Heroicons::search($search, 50)))
-            ->getOptionLabelUsing(fn (?string $value): ?string => Heroicons::previewLabel($value))
-            ->in(fn (): array => Heroicons::names())
-            ->helperText('Any Heroicon: outline, solid, mini or micro. Type to search, e.g. "home" or "arrow solid".');
+        return Heroicons::select($name);
     }
 
     private static function createdBy(array $data): array

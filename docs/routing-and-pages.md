@@ -46,7 +46,15 @@ are reachable immediately, without clearing the route cache.
 
 @section('content')
     <article class="page">
+        @if (\zaheensayyed\FilamentCms\Support\Heroicons::exists($page->icon))
+            @svg($page->icon, 'page-icon')
+        @endif
+
         <h1>{{ $page->title }}</h1>
+
+        @if ($page->description)
+            <p class="page-intro">{{ $page->description }}</p>
+        @endif
 
         <div class="page-body">
             {!! str($page->body)->sanitizeHtml() !!}

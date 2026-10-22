@@ -13,10 +13,10 @@ use Filament\Forms\Components\TextInput;
 class SeoFields
 {
     /**
-     * The collapsible SEO section of the page and blog post forms. Every field is optional;
+     * The collapsible SEO section of the page, blog post and client forms. Every field is optional;
      * blanks fall back to the SEO Defaults settings (see SeoMeta).
      *
-     * @param  string  $subject  "page" or "post", used in the helper texts
+     * @param  string  $subject  "page", "post" or "client", used in the helper texts
      */
     public static function section(string $subject = 'page'): Section
     {
@@ -36,7 +36,7 @@ class SeoFields
                         ->label('Meta description')
                         ->helperText($subject === 'post'
                             ? 'Recommended 150–160 characters. Falls back to the excerpt, then the default description.'
-                            : 'Recommended 150–160 characters. Falls back to the default description.')
+                            : "Recommended 150–160 characters. Falls back to the {$subject} description, then the default description.")
                         ->rows(3)
                         ->maxLength(500),
                     160,
@@ -64,9 +64,11 @@ class SeoFields
                     ->maxLength(500),
                 FileUpload::make('og_image')
                     ->label('Social share image')
-                    ->helperText($subject === 'post'
-                        ? 'Recommended at least 1200×630 px. Also used as twitter:image. Falls back to the cover image, then the default image.'
-                        : 'Recommended at least 1200×630 px. Also used as twitter:image. Falls back to the default image.')
+                    ->helperText(match ($subject) {
+                        'post' => 'Recommended at least 1200×630 px. Also used as twitter:image. Falls back to the cover image, then the default image.',
+                        'client' => 'Recommended at least 1200×630 px. Also used as twitter:image. Falls back to the first image, then the default image.',
+                        default => 'Recommended at least 1200×630 px. Also used as twitter:image. Falls back to the default image.',
+                    })
                     ->image()
                     ->directory('seo')
                     ->maxSize(2048),

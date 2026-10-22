@@ -8,6 +8,7 @@ use BezhanSalleh\FilamentShield\Resources\RoleResource;
 use BezhanSalleh\FilamentShield\Support\Utils;
 use Filament\Facades\Filament;
 use zaheensayyed\FilamentCms\FilamentCmsPlugin;
+use zaheensayyed\FilamentCms\Resources\ClientResource;
 use zaheensayyed\FilamentCms\Resources\ContactSubmissionResource;
 use zaheensayyed\FilamentCms\Resources\GalleryResource;
 use zaheensayyed\FilamentCms\Resources\NavigationResource;
@@ -114,7 +115,7 @@ class CmsPermissions
     }
 
     /**
-     * Full CRUD on pages, blog posts, menus and galleries; read-only contact submissions.
+     * Full CRUD on pages, blog posts, menus, galleries and clients; read-only contact submissions.
      *
      * @return array<int, string>
      */
@@ -125,6 +126,7 @@ class CmsPermissions
             ...static::forResource(PostResource::class),
             ...static::forResource(NavigationResource::class),
             ...static::forResource(GalleryResource::class),
+            ...static::forResource(ClientResource::class),
             ...static::forResource(ContactSubmissionResource::class, ['view', 'view_any']),
         ];
     }

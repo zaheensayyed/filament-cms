@@ -45,6 +45,12 @@ class NavigationItem extends Model
     {
         static::saved(fn () => FilamentCms::forgetMenuCache());
         static::deleted(fn () => FilamentCms::forgetMenuCache());
+
+        // Child items go with their parent (single and bulk delete), so none are left behind
+        // without a menu entry but still answering at their slug.
+        static::deleting(function (NavigationItem $item) {
+            NavigationItem::query()->where('parent_id', $item->getKey())->get()->each->delete();
+        });
     }
 
     public function createdBy()

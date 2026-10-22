@@ -8,7 +8,15 @@
 </head>
 <body>
     <main>
+        @if (\zaheensayyed\FilamentCms\Support\Heroicons::exists($page->icon))
+            @svg($page->icon, '', ['style' => 'width: 2rem; height: 2rem;', 'aria-hidden' => 'true'])
+        @endif
+
         <h1>{{ $page->title }}</h1>
+
+        @if ($page->description)
+            <p>{{ $page->description }}</p>
+        @endif
 
         {!! $page->body !!}
     </main>

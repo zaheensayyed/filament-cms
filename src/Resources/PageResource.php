@@ -6,6 +6,7 @@ use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Set;
@@ -18,6 +19,7 @@ use zaheensayyed\FilamentCms\Models\Page;
 use zaheensayyed\FilamentCms\Resources\PageResource\Pages;
 use zaheensayyed\FilamentCms\Seo\SeoFields;
 use zaheensayyed\FilamentCms\Shield\CmsPermissions;
+use zaheensayyed\FilamentCms\Support\Heroicons;
 
 class PageResource extends Resource implements HasShieldPermissions
 {
@@ -43,6 +45,16 @@ class PageResource extends Resource implements HasShieldPermissions
                                 $set('slug', Str::slug($state));
                             }),
                         TextInput::make('slug')->required(),
+                    ])
+                    ->columns(2),
+                Grid::make()
+                    ->schema([
+                        Textarea::make('description')
+                            ->helperText('Short intro shown under the page title. Also the meta description when that is empty.')
+                            ->rows(3)
+                            ->maxLength(500),
+                        Heroicons::select('icon')
+                            ->helperText('Shown before the page content. Type to search, e.g. "fire", "camera" or "shield solid".'),
                     ])
                     ->columns(2),
                 RichEditor::make('body'),

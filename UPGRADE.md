@@ -1,5 +1,28 @@
 # Upgrade Guide
 
+## Page description and clients (CMS-12)
+
+Run the new migrations and create the client permissions. Both default roles get them;
+custom roles need `*_client` granted on the Roles screen:
+
+```bash
+php artisan migrate
+php artisan filament-cms:roles
+```
+
+If you published `config/filament-cms.php`, copy the new `clients` section from the package
+config. With `FILAMENT_CMS_CLIENT_ROUTES=true`, `/clients` is served by the clients page, so
+a page, gallery or menu item with the slug `clients` is no longer reached at that URL.
+
+Two migrations add nullable `description` and `icon` columns to `pages`. `icon` holds a Heroicon
+name (e.g. `heroicon-o-fire`); print it with `@svg($page->icon)`.
+
+About the description:
+
+Print it under the page title with `{{ $page->description }}`. The SEO component now uses it
+as the meta description when a page has no `meta_description`; pages without a description
+keep the SEO Defaults description as before.
+
 ## Blog (CMS-11)
 
 Run the new migration (it creates `blog_posts`) and create the blog permissions. Both

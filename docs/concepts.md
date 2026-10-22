@@ -9,13 +9,15 @@ Everything is edited in the Filament panel and read on the frontend through the
 | **Blog posts** | Blog Posts | `FilamentCms::getPosts()`, `getPost($slug)`, `/blog` routes |
 | **Navigations & items** | Navigations → Items | `FilamentCms::getMenu($key)` |
 | **Galleries & images** | Galleries → Images | `FilamentCms::getGallery($slug)` |
+| **Clients** | Clients | `FilamentCms::getClients()`, `featuredClients()`, `/clients` routes |
 | **Settings** | Settings (tabs) | `FilamentCms::setting($key, $default)` |
 | **Contact submissions** | Contact Submissions | `<x-filament-cms::contact-form />` |
 | **Users & roles** | Users, Roles | panel only, see [roles](roles.md) |
 
 ## Pages
 
-A title, a unique-ish `slug`, a rich-text `body` and optional SEO fields (meta title and
+A title, a unique-ish `slug`, a short `description` (an intro to show under the title), an
+optional `icon` (any Heroicon, picked from a searchable list), a rich-text `body` and optional SEO fields (meta title and
 description, canonical URL, robots, Open Graph, JSON-LD). See [SEO](seo.md).
 
 ## Blog posts

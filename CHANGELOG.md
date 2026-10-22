@@ -24,6 +24,13 @@ Merged-but-untagged changes go under **Unreleased**; the README describes the la
 - Blog: Blog Posts resource with drafts, scheduled publishing, cover images and SEO fields;
   `blog_posts` table, `*_post` permissions, opt-in `/blog` routes (config `blog`),
   `getPosts()`, `latestPosts()`, `getPost()`, `blogUrl()`, `postUrl()`, `<x-filament-cms::seo :post>`
+- `description` on pages: a short intro shown under the title, also the fallback meta description
+- `icon` on pages: a Heroicon picked from the same searchable list as menu item icons;
+  `Support\Heroicons::select()` builds that field for your own forms
+- Clients: Clients resource (title, description, images, Featured and Published switches,
+  drag-and-drop order, optional logo/industry/location/website/details and SEO fields);
+  `clients` table, `*_client` permissions, opt-in `/clients` page (config `clients`) showing
+  every client as a card, `getClients()`, `featuredClients()`, `getClient()`, `clientsUrl()`
 
 ### Changed
 - Navigations can no longer be created or deleted in the panel
@@ -33,6 +40,8 @@ Merged-but-untagged changes go under **Unreleased**; the README describes the la
 - `GalleryImage::$image_url` is built by the filesystem disk (absolute URL)
 
 ### Fixed
+- Child menu items removed from their parent's form are deleted, and deleting a menu item
+  deletes its child items (they were left behind and still answered at their slug)
 - `updated_by` is now stamped on edit
 - `filament-cms:install` command is registered and runs the package migrations
 - `FilamentCmsTheme` plugin works on Filament 3

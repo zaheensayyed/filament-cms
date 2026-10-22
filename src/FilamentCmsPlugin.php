@@ -8,6 +8,7 @@ use Filament\Pages\Page;
 use Filament\Panel;
 use Filament\Resources\Resource;
 use zaheensayyed\FilamentCms\Pages\Settings;
+use zaheensayyed\FilamentCms\Resources\ClientResource;
 use zaheensayyed\FilamentCms\Resources\ContactSubmissionResource;
 use zaheensayyed\FilamentCms\Resources\GalleryResource;
 use zaheensayyed\FilamentCms\Resources\NavigationResource;
@@ -29,6 +30,7 @@ class FilamentCmsPlugin implements Plugin
         PageResource::class,
         PostResource::class,
         GalleryResource::class,
+        ClientResource::class,
         ContactSubmissionResource::class,
     ];
 
