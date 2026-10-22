@@ -21,6 +21,9 @@ Merged-but-untagged changes go under **Unreleased**; the README describes the la
   `Support\Heroicons::options()`
 - Main Menu and Footer Menu are created automatically (config `navigations`); footer columns
   from the Footer Menu's top-level items; `$item->is_link`
+- Blog: Blog Posts resource with drafts, scheduled publishing, cover images and SEO fields;
+  `blog_posts` table, `*_post` permissions, opt-in `/blog` routes (config `blog`),
+  `getPosts()`, `latestPosts()`, `getPost()`, `blogUrl()`, `postUrl()`, `<x-filament-cms::seo :post>`
 
 ### Changed
 - Navigations can no longer be created or deleted in the panel

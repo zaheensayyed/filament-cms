@@ -5,7 +5,7 @@
 | Tag | What you get | Where |
 | --- | --- | --- |
 | `filament-cms-config` | `filament-cms.php` (catch-all route, contact form endpoint) | `config/` |
-| `filament-cms-views` | SEO and contact form components, email templates, default page/gallery views | `resources/views/vendor/filament-cms/` |
+| `filament-cms-views` | SEO and contact form components, email templates, default page/gallery/blog views | `resources/views/vendor/filament-cms/` |
 | `filament-cms-translations` | Language file | `lang/vendor/filament-cms/` |
 | `filament-shield-config`, `permission-config` | Shield and spatie/laravel-permission config (published by the installer) | `config/` |
 
@@ -23,6 +23,7 @@ Only keep the published files you actually change; the rest keep updating with t
 | `NavigationItem::resolveUrlUsing($type, $callback)` | Change where a menu item type links to ([menus](menus.md#changing-where-a-type-links-to)) |
 | `SeoMeta::resolvePageUrlUsing($callback)` | Tell the SEO component where pages live ([SEO](seo.md#page-urls-in-canonicals)) |
 | `config('filament-cms.routes.views')` | Render CMS pages and galleries with your own views |
+| `config('filament-cms.blog.views')` | Render the blog list and posts with your own views ([blog](blog.md#frontend-routes)) |
 
 ## Upgrading
 

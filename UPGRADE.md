@@ -1,5 +1,19 @@
 # Upgrade Guide
 
+## Blog (CMS-11)
+
+Run the new migration (it creates `blog_posts`) and create the blog permissions. Both
+default roles get them; custom roles need `*_post` granted on the Roles screen:
+
+```bash
+php artisan migrate
+php artisan filament-cms:roles
+```
+
+If you published `config/filament-cms.php`, copy the new `blog` section from the package
+config, then turn the frontend routes on with `FILAMENT_CMS_BLOG_ROUTES=true`
+([blog](docs/blog.md)). Nothing else changes for existing pages.
+
 ## Fixed navigations and static items (CMS-10)
 
 **Only Main Menu and Footer Menu.** The panel creates `main-menu` and `footer-menu` when

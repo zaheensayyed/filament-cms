@@ -26,7 +26,7 @@ class SyncRolesCommand extends Command
         ));
 
         $this->components->twoColumnDetail(CmsPermissions::adminRole(), 'everything (super admin)');
-        $this->components->twoColumnDetail(CmsPermissions::contentManagerRole(), 'pages, menus, galleries; view contact submissions');
+        $this->components->twoColumnDetail(CmsPermissions::contentManagerRole(), 'pages, blog posts, menus, galleries; view contact submissions');
 
         if ($admin = $this->option('admin')) {
             return $this->assignAdmin($admin);

@@ -12,6 +12,7 @@ use zaheensayyed\FilamentCms\Resources\ContactSubmissionResource;
 use zaheensayyed\FilamentCms\Resources\GalleryResource;
 use zaheensayyed\FilamentCms\Resources\NavigationResource;
 use zaheensayyed\FilamentCms\Resources\PageResource;
+use zaheensayyed\FilamentCms\Resources\PostResource;
 use zaheensayyed\FilamentCms\Resources\UserResource;
 use zaheensayyed\FilamentCms\Settings\Groups\CompanyInfoGroup;
 use zaheensayyed\FilamentCms\Settings\Groups\ContactFormGroup;
@@ -26,6 +27,7 @@ class FilamentCmsPlugin implements Plugin
     public const RESOURCES = [
         NavigationResource::class,
         PageResource::class,
+        PostResource::class,
         GalleryResource::class,
         ContactSubmissionResource::class,
     ];

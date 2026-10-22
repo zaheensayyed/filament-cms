@@ -32,6 +32,34 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Blog
+    |--------------------------------------------------------------------------
+    |
+    | Posts are written in the panel (Blog Posts). Opt-in frontend routes:
+    | GET /{prefix} lists published posts (route "filament-cms.blog.index") and
+    | GET /{prefix}/{slug} shows one (route "filament-cms.blog.show"). Drafts
+    | and scheduled posts are 404 except for users who can edit them (preview).
+    |
+    */
+
+    'blog' => [
+        'routes' => env('FILAMENT_CMS_BLOG_ROUTES', false),
+
+        'prefix' => 'blog',
+
+        'middleware' => ['web'],
+
+        'per_page' => 9,
+
+        // Views receive $posts (paginator of Post) or $post (Post).
+        'views' => [
+            'index' => 'filament-cms::blog.index',
+            'show' => 'filament-cms::blog.show',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Navigations
     |--------------------------------------------------------------------------
     |

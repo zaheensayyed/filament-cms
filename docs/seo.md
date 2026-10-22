@@ -6,6 +6,9 @@ Put the component inside `<head>`:
 {{-- CMS page --}}
 <x-filament-cms::seo :page="$page" />
 
+{{-- Blog post: also falls back to the excerpt and cover image, see blog.md --}}
+<x-filament-cms::seo :post="$post" />
+
 {{-- Any other route: emits the site-wide defaults --}}
 <x-filament-cms::seo />
 ```

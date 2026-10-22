@@ -44,7 +44,7 @@ screen.
 | Role | Can |
 | --- | --- |
 | `admin` | Everything: all CMS resources, Settings, Contact Submissions, **Users** and **Roles**. It is Shield's super-admin role, so resources added later are covered automatically. |
-| `content_manager` | Create, view, edit and delete Pages, Navigations (and their items) and Galleries (and their images); view Contact Submissions. No Settings, Users or Roles. |
+| `content_manager` | Create, view, edit and delete Pages, Blog Posts, Navigations (and their items) and Galleries (and their images); view Contact Submissions. No Settings, Users or Roles. |
 
 Change or add roles in the panel under **Roles**. Edit users and their roles under **Users**
 (create users, reset passwords, assign roles); only admins see these screens.
@@ -56,6 +56,7 @@ Permissions follow Shield's naming, `{action}_{resource}`:
 | Resource / page | Permissions |
 | --- | --- |
 | Pages | `view_page`, `view_any_page`, `create_page`, `update_page`, `delete_page`, `delete_any_page` |
+| Blog Posts | same actions with `post` |
 | Navigations | same actions with `navigation` |
 | Galleries | same actions with `gallery` |
 | Contact Submissions | `view_contact::submission`, `view_any_contact::submission`, `delete_contact::submission`, `delete_any_contact::submission` |

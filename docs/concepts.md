@@ -6,6 +6,7 @@ Everything is edited in the Filament panel and read on the frontend through the
 | Concept | Panel | Frontend API |
 | --- | --- | --- |
 | **Pages** | Pages | `FilamentCms::getPage($slug)`, catch-all route |
+| **Blog posts** | Blog Posts | `FilamentCms::getPosts()`, `getPost($slug)`, `/blog` routes |
 | **Navigations & items** | Navigations → Items | `FilamentCms::getMenu($key)` |
 | **Galleries & images** | Galleries → Images | `FilamentCms::getGallery($slug)` |
 | **Settings** | Settings (tabs) | `FilamentCms::setting($key, $default)` |
@@ -16,6 +17,12 @@ Everything is edited in the Filament panel and read on the frontend through the
 
 A title, a unique-ish `slug`, a rich-text `body` and optional SEO fields (meta title and
 description, canonical URL, robots, Open Graph, JSON-LD). See [SEO](seo.md).
+
+## Blog posts
+
+Like pages, plus an excerpt, a cover image, a **Draft / Published** status and a publish date
+(a future date schedules the post). Only published posts whose date has passed reach the
+frontend. Stored in `blog_posts`. See [blog](blog.md).
 
 ## Navigations and items
 

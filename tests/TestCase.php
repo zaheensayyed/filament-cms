@@ -99,6 +99,7 @@ class TestCase extends Orchestra
         config()->set('cache.stores.array.serialize', true);
         config()->set('app.key', 'base64:' . base64_encode(str_repeat('a', 32)));
         config()->set('filament-cms.routes.enabled', true);
+        config()->set('filament-cms.blog.routes', true);
         config()->set('auth.providers.users.model', User::class);
 
         /*

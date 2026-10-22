@@ -7,11 +7,13 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use zaheensayyed\FilamentCms\FilamentCms;
 use zaheensayyed\FilamentCms\Models\Page;
+use zaheensayyed\FilamentCms\Models\Post;
 
 /**
- * Resolves every SEO value for a page (or for a non-CMS route when $page is null).
+ * Resolves every SEO value for a page or blog post (or for a non-CMS route when $page is null).
  *
- * Each value follows the same chain: page field → "SEO Defaults" setting → hardcoded fallback.
+ * Each value follows the same chain: page/post field → "SEO Defaults" setting → hardcoded fallback.
+ * Blog posts also fall back to their excerpt (description) and cover image (share image).
  */
 class SeoMeta
 {
@@ -30,7 +32,7 @@ class SeoMeta
 
     protected static ?Closure $pageUrlResolver = null;
 
-    public function __construct(protected ?Page $page = null) {}
+    public function __construct(protected Page | Post | null $page = null) {}
 
     /**
      * Tell the package where CMS pages live on the frontend, e.g.
@@ -80,7 +82,9 @@ class SeoMeta
 
     public function description(): ?string
     {
-        return $this->pageValue('meta_description') ?? $this->setting('default_description');
+        return $this->pageValue('meta_description')
+            ?? ($this->page instanceof Post ? $this->pageValue('excerpt') : null)
+            ?? $this->setting('default_description');
     }
 
     public function canonical(): string
@@ -91,6 +95,10 @@ class SeoMeta
 
         if ($this->page === null) {
             return url()->current();
+        }
+
+        if ($this->page instanceof Post) {
+            return FilamentCms::postUrl($this->page);
         }
 
         return static::$pageUrlResolver
@@ -118,7 +126,9 @@ class SeoMeta
 
     public function ogImage(): ?string
     {
-        $path = $this->pageValue('og_image') ?? $this->setting('default_og_image');
+        $path = $this->pageValue('og_image')
+            ?? ($this->page instanceof Post ? $this->pageValue('cover_image') : null)
+            ?? $this->setting('default_og_image');
 
         if ($path === null) {
             return null;
@@ -136,6 +146,14 @@ class SeoMeta
         return $this->page ? 'article' : 'website';
     }
 
+    /**
+     * ISO 8601 publish date of a blog post (article:published_time), null for pages.
+     */
+    public function publishedTime(): ?string
+    {
+        return $this->page instanceof Post ? $this->page->published_at?->toIso8601String() : null;
+    }
+
     public function twitterCard(): string
     {
         return static::TWITTER_CARD;
@@ -143,10 +161,15 @@ class SeoMeta
 
     /**
      * Re-encoded JSON-LD that is safe to print inside a <script> tag, or null when missing/invalid.
+     * A blog post without its own gets a schema.org BlogPosting.
      */
     public function structuredData(): ?string
     {
         $json = $this->pageValue('structured_data');
+
+        if ($json === null && $this->page instanceof Post) {
+            $json = json_encode($this->blogPosting());
+        }
 
         if ($json === null) {
             return null;
@@ -162,6 +185,28 @@ class SeoMeta
             $data,
             JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
         );
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function blogPosting(): array
+    {
+        /** @var Post $post */
+        $post = $this->page;
+
+        return array_filter([
+            '@context' => 'https://schema.org',
+            '@type' => 'BlogPosting',
+            'headline' => $this->pageValue('title'),
+            'description' => $this->description(),
+            'image' => $this->ogImage(),
+            'datePublished' => $this->publishedTime(),
+            'dateModified' => $post->updated_at?->toIso8601String(),
+            'author' => ($name = $post->createdBy?->getAttribute('name')) ? ['@type' => 'Person', 'name' => $name] : null,
+            'publisher' => ['@type' => 'Organization', 'name' => $this->siteName()],
+            'mainEntityOfPage' => $this->canonical(),
+        ]);
     }
 
     protected function pageValue(string $attribute): ?string
