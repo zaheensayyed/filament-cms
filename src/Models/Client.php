@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 use zaheensayyed\FilamentCms\FilamentCms;
 
 /**
- * A client shown as a card on the clients page: images, name and description. Featured clients
+ * A client shown as a card on the clients page: logo, name and description. Featured clients
  * also appear on the home page. Hidden from the frontend while unpublished. There are no pages per
  * client; the slug is generated from the name and only identifies the client.
  *
@@ -20,7 +20,6 @@ use zaheensayyed\FilamentCms\FilamentCms;
  * @property string $name
  * @property string $slug
  * @property ?string $description
- * @property ?array<int, string> $images
  * @property ?string $logo
  * @property bool $is_featured
  * @property bool $is_published
@@ -36,8 +35,6 @@ use zaheensayyed\FilamentCms\FilamentCms;
  * @property-read ?Model $createdBy
  * @property-read ?Model $updatedBy
  * @property-read string $url
- * @property-read array<int, string> $image_urls
- * @property-read ?string $cover_image_url
  * @property-read ?string $logo_url
  */
 class Client extends Model
@@ -48,7 +45,6 @@ class Client extends Model
         'name',
         'slug',
         'description',
-        'images',
         'logo',
         'is_featured',
         'is_published',
@@ -70,7 +66,6 @@ class Client extends Model
     ];
 
     protected $casts = [
-        'images' => 'array',
         'is_featured' => 'boolean',
         'is_published' => 'boolean',
         'sort_order' => 'integer',
@@ -140,27 +135,6 @@ class Client extends Model
     public function getUrlAttribute(): string
     {
         return FilamentCms::clientsUrl();
-    }
-
-    /**
-     * Absolute URLs of the images, in display order.
-     *
-     * @return array<int, string>
-     */
-    public function getImageUrlsAttribute(): array
-    {
-        return array_values(array_filter(array_map(
-            fn ($path) => static::fileUrl($path),
-            (array) $this->images,
-        )));
-    }
-
-    /**
-     * The first image, or the logo when there are no images.
-     */
-    public function getCoverImageUrlAttribute(): ?string
-    {
-        return $this->image_urls[0] ?? $this->logo_url;
     }
 
     public function getLogoUrlAttribute(): ?string

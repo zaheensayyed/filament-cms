@@ -18,14 +18,14 @@ function cmsClient(array $attributes = []): Client
         'name' => 'Acme Towers',
         'slug' => 'acme-towers',
         'description' => 'Fire alarm and CCTV for a 40-floor residential tower.',
-        'images' => ['https://cdn.kbi.test/acme-1.jpg', 'https://cdn.kbi.test/acme-2.jpg'],
+        'logo' => 'https://cdn.kbi.test/acme-logo.png',
         'created_by' => 1,
         ...$attributes,
     ]);
 }
 
 describe('panel', function () {
-    it('creates a client with images, published and at the end of the list', function () {
+    it('creates a client with a logo, published and at the end of the list', function () {
         Storage::fake('public');
         cmsClient(['sort_order' => 4]);
 
@@ -33,10 +33,7 @@ describe('panel', function () {
             ->fillForm([
                 'name' => 'Blue Mall',
                 'description' => 'Access control for 120 shops.',
-                'images' => [
-                    UploadedFile::fake()->image('front.jpg'),
-                    UploadedFile::fake()->image('control-room.jpg'),
-                ],
+                'logo' => UploadedFile::fake()->image('blue-mall.png'),
                 'is_featured' => true,
             ])
             ->assertFormSet(['is_published' => true])
@@ -50,11 +47,10 @@ describe('panel', function () {
             ->is_published->toBeTrue()
             ->sort_order->toBe(5)
             ->created_by->toBe(auth()->id())
-            ->and($client->images)->toHaveCount(2)
-            ->and($client->images[0])->toStartWith('clients/')
-            ->and($client->cover_image_url)->toBe(Storage::disk('public')->url($client->images[0]));
+            ->and($client->logo)->toStartWith('clients/logos/')
+            ->and($client->logo_url)->toBe(Storage::disk('public')->url($client->logo));
 
-        Storage::disk('public')->assertExists($client->images);
+        Storage::disk('public')->assertExists($client->logo);
     });
 
     it('requires a title and generates a unique slug from it', function () {
@@ -121,7 +117,7 @@ describe('panel', function () {
 });
 
 describe('frontend', function () {
-    it('lists published clients in the panel order with their image, title and description', function () {
+    it('lists published clients in the panel order with their logo, title and description', function () {
         cmsClient(['name' => 'Second', 'slug' => 'second', 'sort_order' => 2]);
         cmsClient(['name' => 'First', 'slug' => 'first', 'sort_order' => 1]);
         cmsClient(['name' => 'Hidden', 'slug' => 'hidden', 'is_published' => false]);
@@ -129,7 +125,7 @@ describe('frontend', function () {
         $this->get('/clients')
             ->assertOk()
             ->assertSeeInOrder(['First', 'Second'])
-            ->assertSee('https://cdn.kbi.test/acme-1.jpg')
+            ->assertSee('https://cdn.kbi.test/acme-logo.png')
             ->assertSee('Fire alarm and CCTV for a 40-floor residential tower.')
             ->assertDontSee('Hidden');
 
@@ -149,7 +145,7 @@ describe('frontend', function () {
 
     it('shows every client as a card on one page, with no pages per client and nothing in the menu', function () {
         $client = cmsClient();
-        cmsClient(['name' => 'Blue Mall', 'slug' => 'blue-mall', 'description' => null, 'images' => ['https://cdn.kbi.test/mall.jpg']]);
+        cmsClient(['name' => 'Blue Mall', 'slug' => 'blue-mall', 'description' => null, 'logo' => 'https://cdn.kbi.test/mall-logo.png']);
 
         $navigation = Navigation::create(['key' => 'main-menu', 'name' => 'Main Menu', 'description' => '-', 'created_by' => 1]);
         NavigationItem::create(['navigation_id' => $navigation->id, 'name' => 'Clients', 'slug' => 'clients', 'level' => 1, 'type' => NavigationItem::TYPE_CUSTOM_URL, 'custom_url' => '/clients', 'created_by' => 1]);
@@ -157,8 +153,8 @@ describe('frontend', function () {
         $this->get('/clients')
             ->assertOk()
             ->assertSeeInOrder(['Acme Towers', 'Blue Mall'])
-            ->assertSee('https://cdn.kbi.test/acme-2.jpg')
-            ->assertSee('https://cdn.kbi.test/mall.jpg');
+            ->assertSee('https://cdn.kbi.test/acme-logo.png')
+            ->assertSee('https://cdn.kbi.test/mall-logo.png');
 
         $this->get('/clients/acme-towers')->assertNotFound();
 

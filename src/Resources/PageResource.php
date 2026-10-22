@@ -3,6 +3,7 @@
 namespace zaheensayyed\FilamentCms\Resources;
 
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
@@ -57,6 +58,13 @@ class PageResource extends Resource implements HasShieldPermissions
                             ->helperText('Shown before the page content. Type to search, e.g. "fire", "camera" or "shield solid".'),
                     ])
                     ->columns(2),
+                FileUpload::make('cover_image')
+                    ->label('Cover image')
+                    ->helperText('Optional. Shown at the top of the page and on cards that link to it, e.g. product cards. Recommended 1200×630 px.')
+                    ->image()
+                    ->imagePreviewHeight('160')
+                    ->directory('pages')
+                    ->maxSize(4096),
                 RichEditor::make('body'),
                 static::seoSection(),
             ])

@@ -10,7 +10,7 @@ menu doesn't list clients: link to the clients page with a **Custom URL** item (
 | --- | --- |
 | Title | The client's name. |
 | Description | Optional, short: shown on the card. |
-| Images | Upload several and drag them into order. More than one is shown as a slider on the card. |
+| Logo | One image, shown on the card. |
 
 | Switch | Effect |
 | --- | --- |
@@ -19,7 +19,7 @@ menu doesn't list clients: link to the clients page with a **Custom URL** item (
 
 Drag rows on the Clients list to set the order of the cards. New clients go to the end.
 
-**More details** (collapsed) stores optional fields for later: logo, industry, location, website
+**More details** (collapsed) stores optional fields for later: industry, location, website
 and rich-text project details. The default view doesn't print them; use them in your own view
 when you need them. A `slug` is generated from the title (`acme-towers`, `acme-towers-2`, ...) to
 identify the client, e.g. as an HTML `id`; it isn't a URL.
@@ -57,16 +57,16 @@ The default view is bare HTML. Point `views.index` at your own to use your layou
 
 ## Blade
 
-Three cards per row; more than one image as a slider, one as a single image. Use
-`object-fit: contain` (Tailwind `object-contain`) so photos and logos aren't cropped:
+Three cards per row with the logo, title and description. Use `object-fit: contain`
+(Tailwind `object-contain`) so logos aren't cropped:
 
 ```blade
 <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
     @foreach ($clients as $client)
         <article>
-            @foreach ($client->image_urls as $url)
-                <img src="{{ $url }}" alt="{{ $client->name }}" class="aspect-3/2 w-full object-contain">
-            @endforeach
+            @if ($client->logo_url)
+                <img src="{{ $client->logo_url }}" alt="{{ $client->name }}" class="aspect-3/2 w-full object-contain">
+            @endif
 
             <h2>{{ $client->name }}</h2>
 
@@ -82,7 +82,7 @@ Featured clients on the home page:
 
 ```blade
 @foreach (FilamentCms::featuredClients(6) as $client)
-    <img src="{{ $client->cover_image_url }}" alt="{{ $client->name }}">
+    <img src="{{ $client->logo_url }}" alt="{{ $client->name }}">
     {{ $client->name }}
 @endforeach
 <a href="{{ FilamentCms::clientsUrl() }}">All clients</a>
@@ -101,9 +101,8 @@ FilamentCms::clientsUrl();           // URL of the clients page (also $client->u
 | Attribute | Value |
 | --- | --- |
 | `name`, `description` | Title and description |
-| `image_urls` | Absolute URLs of the images, in order |
-| `cover_image_url` | The first image, or the logo when there are none |
+| `logo_url` | Absolute URL of the logo, or `null` |
 | `url` | The clients page |
-| `logo_url`, `industry`, `location`, `website_url`, `body` | Optional details |
+| `industry`, `location`, `website_url`, `body` | Optional details |
 
 Query scopes: `Client::published()`, `featured()`, `ordered()`.

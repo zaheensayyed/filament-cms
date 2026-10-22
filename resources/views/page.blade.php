@@ -18,6 +18,10 @@
             <p>{{ $page->description }}</p>
         @endif
 
+        @if ($page->cover_image_url)
+            <img src="{{ $page->cover_image_url }}" alt="{{ $page->title }}" style="max-width: 100%;">
+        @endif
+
         {!! $page->body !!}
     </main>
 </body>

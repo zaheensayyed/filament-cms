@@ -17,7 +17,7 @@ sites, managed in a [Filament](https://filamentphp.com) panel and rendered with 
 - **Menus**: a Main Menu and a Footer Menu with 2 levels, linking to pages, galleries or custom URLs, plus static (non-clickable) labels; Heroicon icons on child items; cached
 - **Catch-all route** that serves pages and galleries by slug (works with `route:cache`)
 - **Galleries** with image uploads on any filesystem disk
-- **Clients** as cards (images, title, description) on one `/clients` page; featured clients for the home page ([docs](docs/clients.md))
+- **Clients** as cards (logo, title, description) on one `/clients` page; featured clients for the home page ([docs](docs/clients.md))
 - **SEO component**: title, description, canonical, robots, Open Graph, Twitter, JSON-LD
 - **Settings** page with Company Info, SEO Defaults and Contact Form tabs, extensible; read with `FilamentCms::setting()` ([key reference](docs/settings.md#key-reference))
 - **Users & roles** with Filament Shield: `admin` and `content_manager` roles out of the box ([docs](docs/roles.md))

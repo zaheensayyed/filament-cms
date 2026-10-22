@@ -13,9 +13,9 @@
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr)); gap: 1.5rem;">
             @forelse ($clients as $client)
                 <article>
-                    @foreach ($client->image_urls as $url)
-                        <img src="{{ $url }}" alt="{{ $client->name }}" loading="lazy" style="width: 100%; aspect-ratio: 3 / 2; object-fit: contain;">
-                    @endforeach
+                    @if ($client->logo_url)
+                        <img src="{{ $client->logo_url }}" alt="{{ $client->name }}" loading="lazy" style="width: 100%; aspect-ratio: 3 / 2; object-fit: contain;">
+                    @endif
                     <h2>{{ $client->name }}</h2>
                     @if ($client->description)
                         <p>{{ $client->description }}</p>

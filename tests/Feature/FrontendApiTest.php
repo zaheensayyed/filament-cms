@@ -211,6 +211,15 @@ describe('content helpers', function () {
 
         expect((new GalleryImage(['image_name' => 'photos/one.jpg']))->image_url)->toBe('https://cdn.kbi.test/photos/one.jpg');
     });
+
+    it('builds page cover image urls from the configured disk', function () {
+        config()->set('filesystems.disks.cdn', ['driver' => 'local', 'root' => sys_get_temp_dir(), 'url' => 'https://cdn.kbi.test']);
+        config()->set('filament.default_filesystem_disk', 'cdn');
+
+        expect((new Page(['cover_image' => 'pages/fire.jpg']))->cover_image_url)->toBe('https://cdn.kbi.test/pages/fire.jpg')
+            ->and((new Page(['cover_image' => 'https://img.kbi.test/fire.jpg']))->cover_image_url)->toBe('https://img.kbi.test/fire.jpg')
+            ->and((new Page)->cover_image_url)->toBeNull();
+    });
 });
 
 describe('catch-all route', function () {

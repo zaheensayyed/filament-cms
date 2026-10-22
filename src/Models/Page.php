@@ -4,8 +4,13 @@ namespace zaheensayyed\FilamentCms\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use zaheensayyed\FilamentCms\FilamentCms;
 
+/**
+ * @property-read ?string $cover_image_url
+ */
 class Page extends Model
 {
     use HasFactory;
@@ -44,5 +49,18 @@ class Page extends Model
     public function updatedBy()
     {
         return $this->belongsTo(config('auth.providers.users.model'), 'updated_by');
+    }
+
+    public function getCoverImageUrlAttribute(): ?string
+    {
+        if (blank($this->cover_image)) {
+            return null;
+        }
+
+        if (Str::startsWith($this->cover_image, ['http://', 'https://'])) {
+            return $this->cover_image;
+        }
+
+        return Storage::disk(config('filament.default_filesystem_disk'))->url($this->cover_image);
     }
 }

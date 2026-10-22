@@ -56,12 +56,18 @@ are reachable immediately, without clearing the route cache.
             <p class="page-intro">{{ $page->description }}</p>
         @endif
 
+        @if ($page->cover_image_url)
+            <img src="{{ $page->cover_image_url }}" alt="{{ $page->title }}">
+        @endif
+
         <div class="page-body">
             {!! str($page->body)->sanitizeHtml() !!}
         </div>
     </article>
 @endsection
 ```
+
+`cover_image_url` is the absolute URL of the page's optional **Cover image**, or `null`.
 
 The body is HTML written with the panel's rich editor, so it must be printed unescaped
 with `{!! !!}`. `sanitizeHtml()` (a Filament string helper) strips scripts and event-handler

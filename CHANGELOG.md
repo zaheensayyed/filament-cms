@@ -27,10 +27,11 @@ Merged-but-untagged changes go under **Unreleased**; the README describes the la
 - `description` on pages: a short intro shown under the title, also the fallback meta description
 - `icon` on pages: a Heroicon picked from the same searchable list as menu item icons;
   `Support\Heroicons::select()` builds that field for your own forms
-- Clients: Clients resource (title, description, images, Featured and Published switches,
-  drag-and-drop order, optional logo/industry/location/website/details and SEO fields);
+- Clients: Clients resource (title, description, one logo, Featured and Published switches,
+  drag-and-drop order, optional industry/location/website/details and SEO fields);
   `clients` table, `*_client` permissions, opt-in `/clients` page (config `clients`) showing
   every client as a card, `getClients()`, `featuredClients()`, `getClient()`, `clientsUrl()`
+- `cover_image` upload on pages and `$page->cover_image_url`, e.g. for product cards
 
 ### Changed
 - Navigations can no longer be created or deleted in the panel

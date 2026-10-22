@@ -55,18 +55,13 @@ class ClientResource extends Resource implements HasShieldPermissions
                                     ->helperText('A short description for the card on the clients page.')
                                     ->rows(3)
                                     ->maxLength(500),
-                                FileUpload::make('images')
-                                    ->helperText('Drag to reorder. More than one image is shown as a slider on the card.')
+                                FileUpload::make('logo')
+                                    ->helperText('One image, shown on the card.')
                                     ->image()
-                                    ->multiple()
-                                    ->reorderable()
-                                    ->appendFiles()
-                                    ->panelLayout('grid')
-                                    // Whole image in a fixed-height preview instead of a full-width crop.
+                                    // Whole logo in a fixed-height preview instead of a full-width crop.
                                     ->imagePreviewHeight('160')
-                                    ->directory('clients')
-                                    ->maxSize(4096)
-                                    ->maxFiles(30),
+                                    ->directory('clients/logos')
+                                    ->maxSize(2048),
                             ])
                             ->columnSpan(['lg' => 2]),
                         Section::make('Visibility')
@@ -83,14 +78,9 @@ class ClientResource extends Resource implements HasShieldPermissions
                     ])
                     ->columns(['lg' => 3]),
                 Section::make('More details')
-                    ->description('Optional. Stored for later; the website shows the title, description and images.')
+                    ->description('Optional. Stored for later; the website shows the logo, title and description.')
                     ->collapsed()
                     ->schema([
-                        FileUpload::make('logo')
-                            ->image()
-                            ->imagePreviewHeight('120')
-                            ->directory('clients/logos')
-                            ->maxSize(2048),
                         Grid::make(3)
                             ->schema([
                                 TextInput::make('industry')->maxLength(255),
@@ -112,9 +102,9 @@ class ClientResource extends Resource implements HasShieldPermissions
             ->defaultSort('sort_order')
             ->reorderable('sort_order')
             ->columns([
-                ImageColumn::make('cover')
-                    ->label('Image')
-                    ->state(fn (Client $record) => $record->cover_image_url)
+                ImageColumn::make('logo')
+                    ->label('Logo')
+                    ->state(fn (Client $record) => $record->logo_url)
                     ->height(48)
                     ->width(72)
                     ->extraImgAttributes(['class' => 'object-contain rounded bg-gray-50 dark:bg-white/5']),
@@ -123,9 +113,6 @@ class ClientResource extends Resource implements HasShieldPermissions
                     ->searchable()
                     ->sortable()
                     ->description(fn (Client $record) => Str::limit((string) $record->description, 80)),
-                TextColumn::make('images')
-                    ->label('Images')
-                    ->state(fn (Client $record) => count((array) $record->images)),
                 ToggleColumn::make('is_featured')
                     ->label('Featured')
                     ->disabled(fn (Client $record) => ! static::canEdit($record)),
