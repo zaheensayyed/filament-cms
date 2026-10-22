@@ -34,6 +34,47 @@ class Navigation extends Model
         return $this->belongsTo(config('auth.providers.users.model'), 'updated_by');
     }
 
+    /**
+     * The navigations the panel manages (key => name), from config "filament-cms.navigations".
+     *
+     * @return array<string, string>
+     */
+    public static function fixed(): array
+    {
+        return config('filament-cms.navigations', [
+            'main-menu' => 'Main Menu',
+            'footer-menu' => 'Footer Menu',
+        ]);
+    }
+
+    /**
+     * Creates the configured navigations that don't exist yet. A navigation saved before keys
+     * existed is matched by name and given its key instead of being duplicated.
+     */
+    public static function ensureFixed(): void
+    {
+        foreach (static::fixed() as $key => $name) {
+            if (static::query()->where('key', $key)->exists()) {
+                continue;
+            }
+
+            $navigation = static::query()->whereNull('key')->where('name', $name)->first();
+
+            if ($navigation) {
+                $navigation->update(['key' => $key]);
+
+                continue;
+            }
+
+            static::create([
+                'key' => $key,
+                'name' => $name,
+                'description' => $name,
+                'created_by' => auth()->id() ?? 0,
+            ]);
+        }
+    }
+
     public function items()
     {
         return $this->hasMany(NavigationItem::class, 'navigation_id')->where('level', 1);

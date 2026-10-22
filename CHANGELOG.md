@@ -19,8 +19,12 @@ Merged-but-untagged changes go under **Unreleased**; the README describes the la
 - Icon dropdown for child navigation items with every Heroicon (outline, solid, mini, micro),
   searchable with previews; `navigation_items.icon` column, `$item->icon` and
   `Support\Heroicons::options()`
+- Main Menu and Footer Menu are created automatically (config `navigations`); footer columns
+  from the Footer Menu's top-level items; `$item->is_link`
 
 ### Changed
+- Navigations can no longer be created or deleted in the panel
+- `static` items are plain labels: `$item->url` is `null` (see [UPGRADE.md](UPGRADE.md))
 - `getMenu()` builds menus in 2 queries and caches them (see [UPGRADE.md](UPGRADE.md))
 - `NavigationItem::page()` / `gallery()` deprecated in favour of `typePage()` / `typeGallery()`
 - `GalleryImage::$image_url` is built by the filesystem disk (absolute URL)

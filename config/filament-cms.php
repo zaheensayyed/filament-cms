@@ -32,6 +32,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Navigations
+    |--------------------------------------------------------------------------
+    |
+    | The only navigations the panel manages (key => name). They are created
+    | automatically when the Navigations list is opened; creating and deleting
+    | navigations in the panel is turned off. Render them with
+    | FilamentCms::getMenu('main-menu').
+    |
+    */
+
+    'navigations' => [
+        'main-menu' => 'Main Menu',
+        'footer-menu' => 'Footer Menu',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Contact form
     |--------------------------------------------------------------------------
     |

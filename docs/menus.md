@@ -13,7 +13,8 @@ Each item gives you:
 | | |
 | --- | --- |
 | `$item->title` | Label: the linked page's title / gallery's name, otherwise the item name |
-| `$item->url` | Correct `href` for every item type (page, gallery, custom URL, static) |
+| `$item->url` | Correct `href` for every item type; `null` for `static` items |
+| `$item->is_link` | `false` for `static` items (and an empty custom URL): render plain text, not `<a>` |
 | `$item->childItems` | Second-level items (always a collection, possibly empty) |
 | `$item->type` | `page`, `gallery`, `custom_url` or `static` |
 | `$item->linkedPage()` / `linkedGallery()` | The linked model, or `null` for other types |
@@ -21,6 +22,9 @@ Each item gives you:
 
 Always use `$item->url`. Building links yourself (`href="/{{ $item->slug }}"`) is wrong for
 custom URL items, whose address is in `custom_url`, and ignores the catch-all route prefix.
+
+The two menus, `main-menu` and `footer-menu`, are created automatically (see
+[concepts](concepts.md#navigations-and-items)).
 
 ## Copy-paste navbar partial
 
@@ -35,20 +39,28 @@ custom URL items, whose address is in `custom_url`, and ignores the catch-all ro
             @php($isActive = url()->current() === $item->url || $item->childItems->contains(fn ($child) => url()->current() === $child->url))
 
             <li @class(['navbar-item', 'has-children' => $item->childItems->isNotEmpty(), 'active' => $isActive])>
-                <a href="{{ $item->url }}" @if ($item->type === 'custom_url') target="_blank" rel="noopener" @endif>
-                    {{ $item->title }}
-                </a>
+                @if ($item->is_link)
+                    <a href="{{ $item->url }}" @if ($item->type === 'custom_url') target="_blank" rel="noopener" @endif>
+                        {{ $item->title }}
+                    </a>
+                @else
+                    <span>{{ $item->title }}</span>
+                @endif
 
                 @if ($item->childItems->isNotEmpty())
                     <ul class="navbar-dropdown">
                         @foreach ($item->childItems as $child)
                             <li>
-                                <a href="{{ $child->url }}" @class(['active' => url()->current() === $child->url])>
-                                    @if ($child->icon)
-                                        @svg($child->icon, 'navbar-icon')
-                                    @endif
-                                    {{ $child->title }}
-                                </a>
+                                @if ($child->is_link)
+                                    <a href="{{ $child->url }}" @class(['active' => url()->current() === $child->url])>
+                                        @if ($child->icon)
+                                            @svg($child->icon, 'navbar-icon')
+                                        @endif
+                                        {{ $child->title }}
+                                    </a>
+                                @else
+                                    <span>{{ $child->title }}</span>
+                                @endif
                             </li>
                         @endforeach
                     </ul>
@@ -60,6 +72,39 @@ custom URL items, whose address is in `custom_url`, and ignores the catch-all ro
 ```
 
 Include it in your layout with `@include('partials.navbar')`.
+
+## Footer columns
+
+In the **Footer Menu**, each top-level item is a column heading and its child items are the
+links under it. A `static` heading is plain text:
+
+```blade
+<footer class="footer">
+    @foreach (FilamentCms::getMenu('footer-menu') as $column)
+        <div class="footer-column">
+            <h4>
+                @if ($column->is_link)
+                    <a href="{{ $column->url }}">{{ $column->title }}</a>
+                @else
+                    {{ $column->title }}
+                @endif
+            </h4>
+
+            <ul>
+                @foreach ($column->childItems as $child)
+                    <li>
+                        @if ($child->is_link)
+                            <a href="{{ $child->url }}">{{ $child->title }}</a>
+                        @else
+                            {{ $child->title }}
+                        @endif
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    @endforeach
+</footer>
+```
 
 ## Child item icons
 
@@ -84,8 +129,9 @@ The full list is available in PHP as `zaheensayyed\FilamentCms\Support\Heroicons
 
 ## Changing where a type links to
 
-`static` items link to `url($slug)` by default, for routes your app defines itself. To point
-a type somewhere else, register a resolver, e.g. in `AppServiceProvider::boot()`:
+`static` items are not links by default (`url` is `null`). To point a type somewhere, e.g.
+to make `static` items link to routes your app defines itself, register a resolver in
+`AppServiceProvider::boot()`:
 
 ```php
 use zaheensayyed\FilamentCms\Models\NavigationItem;

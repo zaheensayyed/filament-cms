@@ -12,6 +12,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use zaheensayyed\FilamentCms\Models\Navigation;
 use zaheensayyed\FilamentCms\Resources\NavigationResource\Pages;
@@ -28,6 +29,25 @@ class NavigationResource extends Resource implements HasShieldPermissions
     }
 
     protected static ?string $navigationIcon = 'heroicon-o-queue-list';
+
+    /**
+     * Only the navigations in config "filament-cms.navigations" exist; they are created
+     * automatically, so they can't be created or deleted here.
+     */
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return false;
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return false;
+    }
 
     public static function form(Form $form): Form
     {
@@ -84,7 +104,6 @@ class NavigationResource extends Resource implements HasShieldPermissions
     {
         return [
             'index' => Pages\ListNavigations::route('/'),
-            'create' => Pages\CreateNavigation::route('/create'),
             'edit' => Pages\EditNavigation::route('/{record}/edit'),
         ];
     }

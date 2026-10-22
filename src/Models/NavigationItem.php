@@ -122,7 +122,7 @@ class NavigationItem extends Model
      * Frontend href for this item, whatever its type:
      * - custom_url: the stored custom_url (relative paths are made absolute)
      * - page / gallery / category_list: the CMS route for the item's slug
-     * - static: url($slug), for routes the consumer app defines itself
+     * - static: null, it is a plain label (a dropdown or footer heading), not a link
      *
      * Override per type with NavigationItem::resolveUrlUsing().
      */
@@ -134,9 +134,18 @@ class NavigationItem extends Model
 
         return match ($this->type) {
             self::TYPE_CUSTOM_URL => static::normalizeUrl($this->custom_url),
-            self::TYPE_STATIC => url($this->slug),
+            self::TYPE_STATIC => null,
             default => FilamentCms::url($this->slug),
         };
+    }
+
+    /**
+     * Whether to render the item as a link: false for static items (and a custom URL left
+     * empty), which render as plain text.
+     */
+    public function getIsLinkAttribute(): bool
+    {
+        return filled($this->url);
     }
 
     /**

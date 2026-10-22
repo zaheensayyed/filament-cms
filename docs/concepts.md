@@ -19,8 +19,17 @@ description, canonical URL, robots, Open Graph, JSON-LD). See [SEO](seo.md).
 
 ## Navigations and items
 
-A **navigation** is one menu (header, footer, …). Look it up by its stable **key**
-(`main-menu`); the key is set in the panel and doesn't change when the menu is renamed.
+A **navigation** is one menu. There are exactly two, created automatically the first time
+**Navigations** is opened in the panel: **Main Menu** (`main-menu`) and **Footer Menu**
+(`footer-menu`). Admins can rename them and edit their items, but can't create or delete
+navigations. Change the list in `config/filament-cms.php` (`navigations`, key => name).
+
+Look a menu up by its stable **key** (`main-menu`); the key doesn't change when the menu is
+renamed.
+
+In the **Footer Menu**, each top-level item is a column **heading** (e.g. "Products", rename it
+any time) and its child items are the links listed under it. Make the heading a `static` item
+so it isn't clickable.
 
 A navigation has **items**, up to **2 levels**: top-level items and their `childItems`.
 Each item has a `type` that decides what it links to:
@@ -30,7 +39,7 @@ Each item has a `type` that decides what it links to:
 | `page` | a Page (`type_id`) | CMS URL of the item's slug, e.g. `/about` |
 | `gallery` | a Gallery (`type_id`) | CMS URL of the item's slug |
 | `custom_url` | any URL in `custom_url` | that URL (relative paths are made absolute) |
-| `static` | a route your app defines | `url($slug)` |
+| `static` | nothing: a plain label, e.g. a dropdown or footer heading | `null` (`is_link` is `false`) |
 
 Child slugs include the parent: a "Team" item under "About" has the slug `about/team`.
 Child items can also have an **icon**: any [Heroicon](https://heroicons.com) in any style,

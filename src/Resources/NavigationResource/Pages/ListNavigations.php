@@ -2,18 +2,18 @@
 
 namespace zaheensayyed\FilamentCms\Resources\NavigationResource\Pages;
 
-use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use zaheensayyed\FilamentCms\Models\Navigation;
 use zaheensayyed\FilamentCms\Resources\NavigationResource;
 
 class ListNavigations extends ListRecords
 {
     protected static string $resource = NavigationResource::class;
 
-    protected function getHeaderActions(): array
+    public function mount(): void
     {
-        return [
-            Actions\CreateAction::make(),
-        ];
+        Navigation::ensureFixed();
+
+        parent::mount();
     }
 }

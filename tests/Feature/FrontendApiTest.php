@@ -87,7 +87,7 @@ describe('getMenu', function () {
                 ['Project Photos', url('services/photos')],
             ]],
             ['title' => 'Blog', 'url' => 'https://blog.kbi.test', 'children' => []],
-            ['title' => 'Careers', 'url' => url('careers'), 'children' => []],
+            ['title' => 'Careers', 'url' => null, 'children' => []],
         ]);
     });
 
@@ -131,8 +131,22 @@ describe('NavigationItem', function () {
             ->and($href(['type' => 'custom_url', 'custom_url' => 'mailto:hello@kbi.test']))->toBe('mailto:hello@kbi.test')
             ->and($href(['type' => 'custom_url', 'custom_url' => '#contact']))->toBe('#contact')
             ->and($href(['type' => 'custom_url', 'custom_url' => null]))->toBeNull()
-            ->and($href(['type' => 'static', 'slug' => 'careers']))->toBe(url('careers'))
+            ->and($href(['type' => 'static', 'slug' => 'careers']))->toBeNull()
             ->and($href(['type' => 'page', 'slug' => 'about/team']))->toBe(url('about/team'));
+    });
+
+    it('renders static items as plain text, not links', function () {
+        $menu = Navigation::create(['name' => 'Footer', 'description' => '-', 'created_by' => 1]);
+
+        expect(makeItem($menu, ['name' => 'Products', 'slug' => 'products', 'type' => 'static'])->is_link)->toBeFalse()
+            ->and(makeItem($menu, ['name' => 'Blog', 'slug' => 'blog', 'type' => 'custom_url', 'custom_url' => null])->is_link)->toBeFalse()
+            ->and(makeItem($menu, ['name' => 'About', 'slug' => 'about', 'type' => 'page'])->is_link)->toBeTrue();
+
+        NavigationItem::resolveUrlUsing('static', fn (NavigationItem $item) => url($item->slug));
+
+        expect(makeItem($menu, ['name' => 'Careers', 'slug' => 'careers', 'type' => 'static'])->is_link)->toBeTrue();
+
+        NavigationItem::resolveUrlUsing('static', null);
     });
 
     it('lets the app override the href for a type', function () {

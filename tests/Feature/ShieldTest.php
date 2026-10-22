@@ -26,8 +26,8 @@ use zaheensayyed\FilamentCms\Resources\GalleryResource\Pages\CreateGallery;
 use zaheensayyed\FilamentCms\Resources\GalleryResource\Pages\EditGallery;
 use zaheensayyed\FilamentCms\Resources\GalleryResource\RelationManagers\ImagesRelationManager;
 use zaheensayyed\FilamentCms\Resources\NavigationResource;
-use zaheensayyed\FilamentCms\Resources\NavigationResource\Pages\CreateNavigation;
 use zaheensayyed\FilamentCms\Resources\NavigationResource\Pages\EditNavigation;
+use zaheensayyed\FilamentCms\Resources\NavigationResource\Pages\ListNavigations;
 use zaheensayyed\FilamentCms\Resources\NavigationResource\RelationManagers\ItemsRelationManager;
 use zaheensayyed\FilamentCms\Resources\PageResource;
 use zaheensayyed\FilamentCms\Resources\PageResource\Pages\CreatePage;
@@ -136,12 +136,16 @@ describe('content_manager', function () {
     });
 
     it('can manage menus and their items', function () {
-        Livewire::test(CreateNavigation::class)
-            ->fillForm(['name' => 'Footer', 'key' => 'footer', 'description' => 'Footer links'])
-            ->call('create')
+        Livewire::test(ListNavigations::class)->assertOk();
+
+        $navigation = Navigation::where('key', 'footer-menu')->sole();
+
+        Livewire::test(EditNavigation::class, ['record' => $navigation->getRouteKey()])
+            ->fillForm(['name' => 'Footer Links'])
+            ->call('save')
             ->assertHasNoFormErrors();
 
-        $navigation = Navigation::sole();
+        expect($navigation->fresh()->name)->toBe('Footer Links');
         $page = Page::create(['title' => 'Home', 'slug' => 'home', 'created_by' => 1]);
 
         $items = Livewire::test(ItemsRelationManager::class, ['ownerRecord' => $navigation, 'pageClass' => EditNavigation::class])
@@ -216,7 +220,7 @@ describe('admin', function () {
 
         foreach ([PageResource::class, NavigationResource::class, GalleryResource::class, UserResource::class, RoleResource::class] as $resource) {
             expect($resource::canViewAny())->toBeTrue()
-                ->and($resource::canCreate())->toBeTrue();
+                ->and($resource::canCreate())->toBe($resource !== NavigationResource::class);
         }
     });
 
