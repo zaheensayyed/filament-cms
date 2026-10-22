@@ -118,6 +118,29 @@ describe('getMenu', function () {
         NavigationItem::where('slug', 'blog')->first()->delete();
         expect(FilamentCms::getMenu('main-menu'))->toHaveCount(4);
     });
+
+    it('leaves out items whose page or gallery no longer exists, with their children', function () {
+        ['home' => $home, 'services' => $services, 'gallery' => $gallery] = seedMainMenu();
+
+        // Deleted outside the panel: no model events, so only the build can notice.
+        DB::table('pages')->whereIn('id', [$home->id, $services->id])->delete();
+        DB::table('galleries')->where('id', $gallery->id)->delete();
+
+        expect(renderMenu(FilamentCms::getMenu('main-menu')))->toEqual([
+            ['title' => 'Blog', 'url' => 'https://blog.kbi.test', 'children' => []],
+            ['title' => 'Careers', 'url' => null, 'children' => []],
+        ]);
+    });
+
+    it('forgets cached menus when migrations run', function () {
+        seedMainMenu();
+        expect(FilamentCms::getMenu('main-menu'))->toHaveCount(4);
+
+        DB::table('navigation_items')->delete();
+        event(new \Illuminate\Database\Events\MigrationsEnded('up'));
+
+        expect(FilamentCms::getMenu('main-menu'))->toHaveCount(0);
+    });
 });
 
 describe('NavigationItem', function () {

@@ -34,6 +34,8 @@ Merged-but-untagged changes go under **Unreleased**; the README describes the la
 - `cover_image` upload on pages and `$page->cover_image_url`, e.g. for product cards
 
 ### Changed
+- `getMenu()` leaves out items whose page or gallery no longer exists (with their children);
+  menu caches are cleared after migrations
 - Navigations can no longer be created or deleted in the panel
 - `static` items are plain labels: `$item->url` is `null` (see [UPGRADE.md](UPGRADE.md))
 - `getMenu()` builds menus in 2 queries and caches them (see [UPGRADE.md](UPGRADE.md))

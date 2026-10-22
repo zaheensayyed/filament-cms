@@ -9,6 +9,7 @@ use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Database\Events\MigrationsEnded;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Illuminate\Mail\Events\MessageSent;
@@ -96,6 +97,10 @@ class FilamentCmsServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+
+        // Cached menus outlive a migrate:fresh (file/redis cache), still listing pages that are
+        // gone. rescue(): a rollback may have dropped the cache table itself.
+        Event::listen(MigrationsEnded::class, fn () => rescue(fn () => FilamentCms::forgetMenuCache(), report: false));
 
         $this->bootShield();
 

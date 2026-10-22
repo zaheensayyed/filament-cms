@@ -15,7 +15,8 @@ class MenuRepository
      * Builds a menu in two queries: one for the navigation, one for all of its items
      * joined with their linked page/gallery. Returns the top-level items with
      * childItems, typePage and typeGallery already set, so rendering fires no queries.
-     * Returns null when no navigation matches.
+     * Items linking to a page or gallery that no longer exists are left out, with their
+     * children. Returns null when no navigation matches.
      *
      * @return Collection<int, NavigationItem>|null
      */
@@ -48,7 +49,8 @@ class MenuRepository
             ->where('navigation_items.navigation_id', $navigation->id)
             ->orderBy('navigation_items.id')
             ->get()
-            ->each(fn (NavigationItem $item) => static::hydrateLinkTargets($item));
+            ->each(fn (NavigationItem $item) => static::hydrateLinkTargets($item))
+            ->reject(fn (NavigationItem $item) => static::hasMissingTarget($item));
 
         $children = $items->where('level', '>', 1)->groupBy('parent_id');
 
@@ -75,6 +77,19 @@ class MenuRepository
             ->get()
             ->sortByDesc(fn (Navigation $navigation) => $navigation->key === $key)
             ->first();
+    }
+
+    /**
+     * A page or gallery item whose target was deleted outside the panel (e.g. directly in the
+     * database), so its link would 404.
+     */
+    protected static function hasMissingTarget(NavigationItem $item): bool
+    {
+        return match ($item->type) {
+            NavigationItem::TYPE_PAGE => $item->typePage === null,
+            NavigationItem::TYPE_GALLERY => $item->typeGallery === null,
+            default => false,
+        };
     }
 
     protected static function hydrateLinkTargets(NavigationItem $item): void

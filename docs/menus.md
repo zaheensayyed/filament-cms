@@ -144,7 +144,10 @@ NavigationItem::resolveUrlUsing('static', fn (NavigationItem $item) => route($it
 The whole menu (items, children, linked page titles and slugs) is built once and stored with
 `Cache::rememberForever()` in your default cache store. It is rebuilt automatically when a
 navigation, navigation item, page or gallery is **saved or deleted** through Eloquent (the panel
-always does this).
+always does this), and after every `php artisan migrate` (including `migrate:fresh`).
+
+Items linking to a page or gallery that no longer exists are left out of the menu, together
+with their child items, so a deleted page never leaves a link that 404s.
 
 If you change those tables with raw queries or an import script, clear it yourself:
 
