@@ -5,6 +5,7 @@ use Filament\Tables\Actions\EditAction;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
+use Spatie\Permission\Models\Role;
 use zaheensayyed\FilamentCms\Facades\FilamentCms;
 use zaheensayyed\FilamentCms\Models\Post;
 use zaheensayyed\FilamentCms\Resources\PostResource;
@@ -110,6 +111,51 @@ describe('panel', function () {
             ->callTableAction(DeleteAction::class, $draft);
 
         expect(Post::count())->toBe(2);
+    });
+
+    it('publishes every draft and scheduled post with Publish all', function () {
+        $live = blogPost(['published_at' => now()->subMonth()]);
+        $scheduled = blogPost(['slug' => 'later', 'published_at' => now()->addWeek()]);
+        $draft = blogPost(['slug' => 'draft', 'status' => Post::STATUS_DRAFT, 'published_at' => null]);
+
+        Livewire::test(ListPosts::class)
+            ->assertActionVisible('publishAll')
+            ->callAction('publishAll')
+            ->assertNotified('Published 2 posts')
+            ->assertActionHidden('publishAll');
+
+        expect(Post::unpublished()->count())->toBe(0)
+            ->and($scheduled->fresh()->published_at->isFuture())->toBeFalse()
+            ->and($draft->fresh())->is_published->toBeTrue()->updated_by->toBe(auth()->id())
+            ->and($live->fresh()->published_at->toDateString())->toBe(now()->subMonth()->toDateString());
+    });
+
+    it('publishes only the selected posts', function () {
+        $first = blogPost(['slug' => 'first', 'status' => Post::STATUS_DRAFT, 'published_at' => null]);
+        $second = blogPost(['slug' => 'second', 'status' => Post::STATUS_DRAFT, 'published_at' => null]);
+        $other = blogPost(['slug' => 'other', 'status' => Post::STATUS_DRAFT, 'published_at' => null]);
+
+        Livewire::test(ListPosts::class)
+            ->callTableBulkAction('publish', [$first, $second])
+            ->assertNotified('Published 2 posts');
+
+        expect($first->fresh()->is_published)->toBeTrue()
+            ->and($second->fresh()->is_published)->toBeTrue()
+            ->and($other->fresh()->is_published)->toBeFalse();
+
+        Livewire::test(ListPosts::class)
+            ->callTableBulkAction('publish', [$first])
+            ->assertNotified('Nothing to publish');
+    });
+
+    it('hides the publish actions from users who cannot edit posts', function () {
+        Role::findByName('content_manager')->revokePermissionTo('update_post');
+        $this->actingAs($this->createUser('content_manager'));
+        blogPost(['status' => Post::STATUS_DRAFT, 'published_at' => null]);
+
+        Livewire::test(ListPosts::class)
+            ->assertActionHidden('publishAll')
+            ->assertTableBulkActionHidden('publish');
     });
 });
 

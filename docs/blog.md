@@ -13,13 +13,18 @@ Each post has:
 | Excerpt | Optional summary for the blog list and the meta description. Empty uses the first 200 characters of the body. |
 | Body | Rich text; images attached in the editor go to the `blog/` folder of the default disk. |
 | Status | **Draft** or **Published**. |
-| Publish date | Empty publishes now. A future date **schedules** the post: it appears by itself once the date passes. |
+| Publish date | Empty publishes now. A future date **schedules** the post: it appears by itself once the date passes. Scheduling needs the status **Published**; a draft never goes live by its date. |
 | Cover image | Shown on the list and the post, and used as the share image. |
 | SEO | Same fields as pages ([SEO](seo.md)). |
 
 The list shows each post as **Published**, **Scheduled** or **Draft**, can be filtered by status,
 and has a **View** action that opens the post on the site. Drafts and scheduled posts open as a
 **preview** for users who can edit them; everyone else gets a 404.
+
+To put posts live in one go, **Publish all** (above the list) publishes every draft and
+scheduled post, and **Publish selected** (bulk actions) publishes the ticked ones. Both ask for
+confirmation and set the publish date to now; posts that are already live keep theirs. They
+need the `update_post` permission.
 
 Who can do what is set by the `*_post` permissions ([roles](roles.md#permissions)). Both default
 roles can manage posts.
@@ -117,7 +122,9 @@ FilamentCms::postUrl($post);      // URL of a post (also $post->url)
 | `is_published` | `true` once published and the publish date has passed |
 | `createdBy` | The author (user model) |
 
-`Post::published()` is the query scope behind all of these.
+`Post::published()` is the query scope behind all of these; `Post::unpublished()` is the
+opposite (drafts and scheduled posts). `$post->publish()` puts a post live now and returns
+`false` when it already was.
 
 To link to the blog from a menu, add a **Custom URL** item with `/blog`.
 

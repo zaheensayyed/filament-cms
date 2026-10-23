@@ -13,12 +13,14 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Set;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use zaheensayyed\FilamentCms\Models\Post;
 use zaheensayyed\FilamentCms\Resources\PostResource\Pages;
@@ -141,9 +143,46 @@ class PostResource extends Resource implements HasShieldPermissions
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\BulkAction::make('publish')
+                        ->label('Publish selected')
+                        ->icon('heroicon-o-paper-airplane')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->modalHeading('Publish selected posts')
+                        ->modalDescription('Selected drafts and scheduled posts go live now. Posts that are already live keep their publish date.')
+                        ->modalSubmitActionLabel('Publish')
+                        ->visible(fn () => static::canPublish())
+                        ->action(fn (Collection $records) => static::publish($records))
+                        ->deselectRecordsAfterCompletion(),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    /**
+     * Publishing changes posts, so it needs the update permission.
+     */
+    public static function canPublish(): bool
+    {
+        return auth()->user()?->can('update', new Post) ?? false;
+    }
+
+    /**
+     * Publishes the posts now (see Post::publish()) and says how many went live.
+     *
+     * @param  iterable<Post>  $posts
+     */
+    public static function publish(iterable $posts): int
+    {
+        $count = collect($posts)->filter(fn (Post $post) => $post->publish())->count();
+
+        $notification = $count
+            ? Notification::make()->success()->title('Published ' . $count . ' ' . Str::plural('post', $count))
+            : Notification::make()->info()->title('Nothing to publish')->body('The selected posts are already live.');
+
+        $notification->send();
+
+        return $count;
     }
 
     /**
