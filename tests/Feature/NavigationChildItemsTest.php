@@ -89,3 +89,33 @@ it('deletes the child items of parents deleted in bulk', function () {
 
     expect(NavigationItem::count())->toBe(0);
 });
+
+it('saves a custom URL child item with its URL and no page', function () {
+    [$navigation, $parent, $cctv] = menuWithChildren();
+
+    $table = itemsTable($navigation)->mountTableAction(EditAction::class, $parent);
+
+    // Switch "CCTV" to a custom URL, as picking "Custom URL" in the panel does.
+    $state = $table->get('mountedTableActionsData.0.child_menu_items');
+    $key = collect($state)->search(fn (array $item) => $item['child_name'] === 'CCTV');
+
+    $table->set("mountedTableActionsData.0.child_menu_items.{$key}.child_type", NavigationItem::TYPE_CUSTOM_URL)
+        ->assertFormFieldIsHidden("child_menu_items.{$key}.child_type_id", 'mountedTableActionForm')
+        ->assertFormFieldIsVisible("child_menu_items.{$key}.child_custom_url", 'mountedTableActionForm')
+        ->set("mountedTableActionsData.0.child_menu_items.{$key}.child_custom_url", '/blog/cctv-guide')
+        ->callMountedTableAction()
+        ->assertHasNoTableActionErrors();
+
+    $cctv->refresh();
+
+    expect($cctv->type)->toBe(NavigationItem::TYPE_CUSTOM_URL)
+        ->and($cctv->type_id)->toBeNull()
+        ->and($cctv->custom_url)->toBe('/blog/cctv-guide')
+        ->and($cctv->url)->toBe(url('/blog/cctv-guide'));
+
+    // Reopened, the form shows the saved URL.
+    $reopened = itemsTable($navigation)->mountTableAction(EditAction::class, $parent)
+        ->get('mountedTableActionsData.0.child_menu_items');
+
+    expect(collect($reopened)->firstWhere('child_name', 'CCTV')['child_custom_url'])->toBe('/blog/cctv-guide');
+});

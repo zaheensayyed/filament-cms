@@ -29,7 +29,10 @@ class NavigationItemRepository
             $navChildItem->slug = static::childSlug($record->slug, $childItems['child_slug']);
             $navChildItem->level = 2;
             $navChildItem->type = $childItems['child_type'];
-            $navChildItem->type_id = $childItems['child_type_id'];
+            // A custom URL child has a URL and no page / gallery, every other type the reverse.
+            $isCustomUrl = ! NavigationItem::hasOptions($childItems['child_type']);
+            $navChildItem->type_id = $isCustomUrl ? null : ($childItems['child_type_id'] ?? null);
+            $navChildItem->custom_url = $isCustomUrl ? ($childItems['child_custom_url'] ?? null) : null;
             $navChildItem->icon = $childItems['child_icon'] ?? null;
             $navChildItem->updated_by = auth()->id();
             $navChildItem->save();
@@ -57,6 +60,7 @@ class NavigationItemRepository
             $item['child_slug'] = $childItem->slug;
             $item['child_type'] = $childItem->type;
             $item['child_type_id'] = $childItem->type_id;
+            $item['child_custom_url'] = $childItem->custom_url;
             $item['child_icon'] = $childItem->icon;
             $item['child_id'] = $childItem->id;
 

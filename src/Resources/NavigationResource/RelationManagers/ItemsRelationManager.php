@@ -90,7 +90,10 @@ class ItemsRelationManager extends RelationManager
                                     ->live()
                                     ->options(NavigationItem::getAllTypeOptions())
                                     ->default(NavigationItem::TYPE_PAGE)
-                                    ->required(),
+                                    ->required()
+                                    // The page / gallery picked for the old type means nothing for the new one.
+                                    ->afterStateUpdated(fn (Set $set) => $set('child_type_id', null)),
+                                // Same as the parent item: a page / gallery / static pick, or a custom URL input.
                                 Select::make('child_type_id')
                                     ->required()
                                     ->options(function (Get $get) {
@@ -100,7 +103,12 @@ class ItemsRelationManager extends RelationManager
                                         }
 
                                         return [];
-                                    }),
+                                    })
+                                    ->visible(fn (Get $get) => NavigationItem::hasOptions($get('child_type'))),
+                                TextInput::make('child_custom_url')
+                                    ->label('Custom URL')
+                                    ->required()
+                                    ->visible(fn (Get $get) => ! NavigationItem::hasOptions($get('child_type'))),
                                 static::iconSelect('child_icon'),
                             ])
                             ->columns(2),
