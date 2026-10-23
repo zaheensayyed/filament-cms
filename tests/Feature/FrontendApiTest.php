@@ -1,5 +1,6 @@
 <?php
 
+use Filament\Forms\Components\RichEditor;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Livewire\Livewire;
@@ -10,7 +11,9 @@ use zaheensayyed\FilamentCms\Models\GalleryImage;
 use zaheensayyed\FilamentCms\Models\Navigation;
 use zaheensayyed\FilamentCms\Models\NavigationItem;
 use zaheensayyed\FilamentCms\Models\Page;
+use zaheensayyed\FilamentCms\Resources\GalleryResource\Pages\CreateGallery;
 use zaheensayyed\FilamentCms\Resources\NavigationResource\Pages\EditNavigation;
+use zaheensayyed\FilamentCms\Resources\PageResource\Pages\CreatePage;
 use zaheensayyed\FilamentCms\Resources\PageResource\Pages\EditPage;
 
 function makePage(string $title, string $slug): Page
@@ -255,6 +258,27 @@ describe('catch-all route', function () {
         $this->get('/nothing-here')->assertNotFound();
     });
 
+    it('shows the galleries picked for a page with their description as the caption', function () {
+        $page = makePage('Fire Detection', 'fire-detection');
+        $gallery = Gallery::create(['name' => 'Fire Detection Photos', 'slug' => 'fire-detection-photos', 'description' => 'Panel room at Acme Towers', 'page_id' => $page->id, 'created_by' => 1]);
+        GalleryImage::create(['gallery_id' => $gallery->id, 'image_name' => 'fire-detection-photos/one.jpg', 'created_by' => 1]);
+        GalleryImage::create(['gallery_id' => $gallery->id, 'image_name' => 'fire-detection-photos/two.jpg', 'created_by' => 1]);
+        Gallery::create(['name' => 'Elsewhere', 'slug' => 'elsewhere', 'description' => 'Not on this page', 'created_by' => 1]);
+
+        $this->get('/fire-detection')->assertOk()
+            ->assertSeeInOrder(['fire-detection-photos/one.jpg', 'fire-detection-photos/two.jpg', '<figcaption>Panel room at Acme Towers</figcaption>'], false)
+            ->assertDontSee('Not on this page');
+    });
+
+    it('keeps a gallery when its page is deleted', function () {
+        $page = makePage('Fire Detection', 'fire-detection');
+        $gallery = Gallery::create(['name' => 'Photos', 'slug' => 'photos', 'page_id' => $page->id, 'created_by' => 1]);
+
+        $page->delete();
+
+        expect($gallery->fresh())->not->toBeNull()->page_id->toBeNull();
+    });
+
     it('never shadows routes defined by the app', function () {
         seedMainMenu();
 
@@ -302,5 +326,24 @@ describe('audit columns', function () {
         expect($menu->refresh())
             ->created_by->toBe(1)
             ->updated_by->toBe($editor->id);
+    });
+});
+
+describe('page images in the panel', function () {
+    it('picks the page a gallery is shown on', function () {
+        $page = makePage('Fire Detection', 'fire-detection');
+
+        Livewire::test(CreateGallery::class)
+            ->fillForm(['name' => 'Fire Detection Photos', 'slug' => 'fire-detection-photos', 'page_id' => $page->id, 'images' => []])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        expect(Gallery::sole()->page->is($page))->toBeTrue()
+            ->and($page->galleries->pluck('slug')->all())->toBe(['fire-detection-photos']);
+    });
+
+    it('has no image upload in the page body editor', function () {
+        Livewire::test(CreatePage::class)
+            ->assertFormFieldExists('body', fn (RichEditor $field) => ! $field->hasToolbarButton('attachFiles') && $field->hasToolbarButton('bold'));
     });
 });

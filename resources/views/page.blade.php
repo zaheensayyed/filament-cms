@@ -23,6 +23,19 @@
         @endif
 
         {!! $page->body !!}
+
+        {{-- Galleries picked for this page (Galleries → Page), each with its description as the caption. --}}
+        @foreach ($page->galleries as $gallery)
+            <figure>
+                @foreach ($gallery->images as $image)
+                    <img src="{{ $image->image_url }}" alt="{{ $image->image_caption ?? $gallery->name }}" loading="lazy" style="max-width: 100%;">
+                @endforeach
+
+                @if ($gallery->description)
+                    <figcaption>{{ $gallery->description }}</figcaption>
+                @endif
+            </figure>
+        @endforeach
     </main>
 </body>
 </html>

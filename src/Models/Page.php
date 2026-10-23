@@ -39,6 +39,8 @@ class Page extends Model
         // Menu titles/links come from pages and galleries, so cached menus must be rebuilt.
         static::saved(fn () => FilamentCms::forgetMenuCache());
         static::deleted(fn () => FilamentCms::forgetMenuCache());
+        // Its galleries stay (the foreign key does the same on databases that enforce it).
+        static::deleted(fn (Page $page) => Gallery::where('page_id', $page->id)->update(['page_id' => null]));
     }
 
     public function createdBy()
@@ -49,6 +51,14 @@ class Page extends Model
     public function updatedBy()
     {
         return $this->belongsTo(config('auth.providers.users.model'), 'updated_by');
+    }
+
+    /**
+     * Galleries shown on this page (Galleries → Page in the panel), oldest first.
+     */
+    public function galleries()
+    {
+        return $this->hasMany(Gallery::class, 'page_id')->oldest('id');
     }
 
     public function getCoverImageUrlAttribute(): ?string

@@ -14,6 +14,7 @@ class Gallery extends Model
         'name',
         'slug',
         'description',
+        'page_id',
         'created_by',
         'updated_by',
     ];
@@ -38,5 +39,13 @@ class Gallery extends Model
     public function images()
     {
         return $this->hasMany(GalleryImage::class, 'gallery_id');
+    }
+
+    /**
+     * The page this gallery is shown on, if any.
+     */
+    public function page()
+    {
+        return $this->belongsTo(Page::class, 'page_id');
     }
 }

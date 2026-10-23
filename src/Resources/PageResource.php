@@ -60,12 +60,14 @@ class PageResource extends Resource implements HasShieldPermissions
                     ->columns(2),
                 FileUpload::make('cover_image')
                     ->label('Cover image')
-                    ->helperText('Optional. Shown at the top of the page and on cards that link to it, e.g. product cards. Recommended 1200×630 px.')
+                    ->helperText('Optional. Shown behind the page title and description, and on cards that link to it, e.g. product cards. Recommended 1920×800 px.')
                     ->image()
                     ->imagePreviewHeight('160')
                     ->directory('pages')
                     ->maxSize(4096),
-                RichEditor::make('body'),
+                RichEditor::make('body')
+                    // Page images are the cover image and galleries (Galleries → Page), not inline uploads.
+                    ->disableToolbarButtons(['attachFiles']),
                 static::seoSection(),
             ])
             ->columns(1);

@@ -57,8 +57,9 @@ picked from a searchable dropdown in the panel and stored as its Blade name
 
 ## Galleries and images
 
-A gallery has a name, slug, description and many images. Images are uploaded in the panel
-to Filament's default disk; `$image->image_url` gives the public URL.
+A gallery has a name, slug, description and many images, and can be shown on a page (its
+**Page** field). Images are uploaded in the panel to Filament's default disk;
+`$image->image_url` gives the public URL. See [galleries on a page](galleries.md#galleries-on-a-page).
 
 ## Settings
 
@@ -74,6 +75,7 @@ erDiagram
     navigation_items ||--o{ navigation_items : "parent_id (2 levels)"
     navigation_items }o--o| pages : "type = page, type_id"
     navigation_items }o--o| galleries : "type = gallery, type_id"
+    pages |o--o{ galleries : "shown on, page_id"
     galleries ||--o{ gallery_images : "has images"
 
     navigations {
@@ -104,6 +106,7 @@ erDiagram
         bigint id
         string name
         string slug "unique"
+        bigint page_id "nullable, page it is shown on"
     }
     gallery_images {
         bigint id

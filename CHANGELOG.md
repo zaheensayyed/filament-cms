@@ -32,8 +32,12 @@ Merged-but-untagged changes go under **Unreleased**; the README describes the la
   `clients` table, `*_client` permissions, opt-in `/clients` page (config `clients`) showing
   every client as a card, `getClients()`, `featuredClients()`, `getClient()`, `clientsUrl()`
 - `cover_image` upload on pages and `$page->cover_image_url`, e.g. for product cards
+- Galleries can be shown on a page: **Page** dropdown on galleries, `galleries.page_id`,
+  `$gallery->page`, `$page->galleries` (loaded by the catch-all route); the default page view
+  shows them with the description as the caption
 
 ### Changed
+- The page body editor has no image upload button (use the cover image or a gallery)
 - `getMenu()` leaves out items whose page or gallery no longer exists (with their children);
   menu caches are cleared after migrations
 - Navigations can no longer be created or deleted in the panel

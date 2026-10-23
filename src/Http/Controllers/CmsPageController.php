@@ -18,6 +18,6 @@ class CmsPageController
             return view(config('filament-cms.routes.views.gallery'), ['gallery' => $content]);
         }
 
-        return view(config('filament-cms.routes.views.page'), ['page' => $content]);
+        return view(config('filament-cms.routes.views.page'), ['page' => $content->load('galleries.images')]);
     }
 }
