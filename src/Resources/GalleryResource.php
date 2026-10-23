@@ -63,7 +63,8 @@ class GalleryResource extends Resource implements HasShieldPermissions
                             ->imageResizeTargetWidth('1920')
                             ->imageResizeTargetHeight('1080')
                             // ->panelAspectRatio('1:1')
-                            // ->panelLayout('compact')
+                            // Previews in a grid (3 per row on wide screens, 2 on small) instead of one full-width row each.
+                            ->panelLayout('grid')
                             ->minSize(1)
                             ->maxSize(2048),
                     ])
