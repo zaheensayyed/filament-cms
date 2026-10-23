@@ -37,7 +37,7 @@ FILAMENT_CMS_CLIENT_ROUTES=true
 
 | URL | Route name | View receives |
 | --- | --- | --- |
-| `/clients` | `filament-cms.clients.index` | `$clients`: published clients in the panel's order |
+| `/clients` | `filament-cms.clients.index` | `$clients`: paginator of published clients in the panel's order, `per_page` (12) at a time; `/clients?page=2` for the next page |
 
 It is an ordinary route, so it wins over the catch-all page route: a page, gallery or menu item
 with the slug `clients` is no longer reached at `/clients`. Options in `config/filament-cms.php`:
@@ -47,6 +47,7 @@ with the slug `clients` is no longer reached at `/clients`. Options in `config/f
     'routes' => env('FILAMENT_CMS_CLIENT_ROUTES', false),
     'prefix' => 'clients',           // e.g. "our-clients"
     'middleware' => ['web'],
+    'per_page' => 12,
     'views' => [
         'index' => 'filament-cms::clients.index',
     ],
@@ -76,6 +77,8 @@ Three cards per row with the logo, title and description. Use `object-fit: conta
         </article>
     @endforeach
 </div>
+
+{{ $clients->links() }}
 ```
 
 Featured clients on the home page:
@@ -92,6 +95,8 @@ Featured clients on the home page:
 
 ```php
 FilamentCms::getClients();           // published clients, panel order
+FilamentCms::paginateClients();      // the same, paginated (per_page from config)
+FilamentCms::paginateClients(24);    // 24 per page
 FilamentCms::featuredClients();      // published + Featured, panel order
 FilamentCms::featuredClients(6);     // at most 6
 FilamentCms::getClient('acme');      // ?Client by slug, published only

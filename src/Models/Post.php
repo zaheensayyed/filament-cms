@@ -108,17 +108,6 @@ class Post extends Model
     }
 
     /**
-     * Posts the frontend doesn't show yet: drafts and scheduled posts.
-     */
-    public function scopeUnpublished(Builder $query): Builder
-    {
-        return $query->where(fn (Builder $query) => $query
-            ->where('status', '!=', self::STATUS_PUBLISHED)
-            ->orWhereNull('published_at')
-            ->orWhere('published_at', '>', now()));
-    }
-
-    /**
      * Puts the post live now: a draft or scheduled post gets now as its publish date, a live post
      * is left as it is. Returns whether it was published.
      */

@@ -65,9 +65,9 @@ return [
     |
     | Clients are added in the panel (Clients): title, description and images,
     | and a Featured switch for the home page (FilamentCms::featuredClients()).
-    | Opt-in frontend route: GET /{prefix} shows every published client as a
-    | card on one page (route "filament-cms.clients.index"). There are no pages
-    | per client; link to the page with a custom URL menu item (/{prefix}).
+    | Opt-in frontend route: GET /{prefix} shows the published clients as
+    | cards, per_page at a time (route "filament-cms.clients.index"). There are
+    | no pages per client; link to the page with a custom URL menu item (/{prefix}).
     |
     */
 
@@ -78,7 +78,9 @@ return [
 
         'middleware' => ['web'],
 
-        // The view receives $clients (Collection of Client).
+        'per_page' => 12,
+
+        // The view receives $clients (paginator of Client).
         'views' => [
             'index' => 'filament-cms::clients.index',
         ],

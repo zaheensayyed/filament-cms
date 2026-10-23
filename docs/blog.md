@@ -12,19 +12,20 @@ Each post has:
 | Title, slug | The slug follows the title while you create the post, then stays put so the URL doesn't change. Unique, letters, numbers, `-` and `_`. |
 | Excerpt | Optional summary for the blog list and the meta description. Empty uses the first 200 characters of the body. |
 | Body | Rich text; images attached in the editor go to the `blog/` folder of the default disk. |
-| Status | **Draft** or **Published**. |
-| Publish date | Empty publishes now. A future date **schedules** the post: it appears by itself once the date passes. Scheduling needs the status **Published**; a draft never goes live by its date. |
+| Status | **Draft** or **Published**. A published post goes live as soon as it is saved; its publish date is set then. |
 | Cover image | Shown on the list and the post, and used as the share image. |
 | SEO | Same fields as pages ([SEO](seo.md)). |
+
+The panel has no publish date field. A post given a future `published_at` in code shows as
+**Scheduled** and appears by itself once the date passes.
 
 The list shows each post as **Published**, **Scheduled** or **Draft**, can be filtered by status,
 and has a **View** action that opens the post on the site. Drafts and scheduled posts open as a
 **preview** for users who can edit them; everyone else gets a 404.
 
-To put posts live in one go, **Publish all** (above the list) publishes every draft and
-scheduled post, and **Publish selected** (bulk actions) publishes the ticked ones. Both ask for
-confirmation and set the publish date to now; posts that are already live keep theirs. They
-need the `update_post` permission.
+To put posts live in one go, tick them (or tick the header checkbox and **Select all**) and use
+**Bulk actions → Publish selected**. It asks for confirmation and sets the publish date to now;
+posts that are already live keep theirs. It needs the `update_post` permission.
 
 Who can do what is set by the `*_post` permissions ([roles](roles.md#permissions)). Both default
 roles can manage posts.
@@ -122,8 +123,7 @@ FilamentCms::postUrl($post);      // URL of a post (also $post->url)
 | `is_published` | `true` once published and the publish date has passed |
 | `createdBy` | The author (user model) |
 
-`Post::published()` is the query scope behind all of these; `Post::unpublished()` is the
-opposite (drafts and scheduled posts). `$post->publish()` puts a post live now and returns
+`Post::published()` is the query scope behind all of these. `$post->publish()` puts a post live now and returns
 `false` when it already was.
 
 To link to the blog from a menu, add a **Custom URL** item with `/blog`.

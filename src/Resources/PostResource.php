@@ -3,7 +3,6 @@
 namespace zaheensayyed\FilamentCms\Resources;
 
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
@@ -86,10 +85,8 @@ class PostResource extends Resource implements HasShieldPermissions
                                     ->options(Post::STATUSES)
                                     ->default(Post::STATUS_DRAFT)
                                     ->required()
-                                    ->native(false),
-                                DateTimePicker::make('published_at')
-                                    ->label('Publish date')
-                                    ->helperText('Empty publishes now. A future date schedules the post.'),
+                                    ->native(false)
+                                    ->helperText('Published posts go live as soon as they are saved.'),
                                 FileUpload::make('cover_image')
                                     ->label('Cover image')
                                     ->helperText('Shown on the blog list and at the top of the post. Recommended 1200×630 px.')

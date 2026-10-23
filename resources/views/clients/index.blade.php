@@ -25,6 +25,8 @@
                 <p>No clients yet.</p>
             @endforelse
         </div>
+
+        {{ $clients->links() }}
     </main>
 </body>
 </html>

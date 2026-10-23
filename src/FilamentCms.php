@@ -184,6 +184,16 @@ class FilamentCms
     }
 
     /**
+     * Published clients in the panel's order, paginated (config "filament-cms.clients.per_page").
+     *
+     * @return LengthAwarePaginator<Client>
+     */
+    public static function paginateClients(?int $perPage = null): LengthAwarePaginator
+    {
+        return Client::published()->ordered()->paginate($perPage ?? (int) config('filament-cms.clients.per_page', 12));
+    }
+
+    /**
      * Published clients marked as featured, e.g. for the home page.
      *
      * @return Collection<int, Client>

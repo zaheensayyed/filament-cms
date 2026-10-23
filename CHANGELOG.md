@@ -24,7 +24,8 @@ Merged-but-untagged changes go under **Unreleased**; the README describes the la
 - Blog: Blog Posts resource with drafts, scheduled publishing, cover images and SEO fields;
   `blog_posts` table, `*_post` permissions, opt-in `/blog` routes (config `blog`),
   `getPosts()`, `latestPosts()`, `getPost()`, `blogUrl()`, `postUrl()`, `<x-filament-cms::seo :post>`
-- **Publish all** and **Publish selected** actions on Blog Posts; `Post::unpublished()`, `$post->publish()`
+- **Publish selected** bulk action on Blog Posts; `$post->publish()`
+- `/clients` is paginated (config `clients.per_page`, 12); `paginateClients()`
 - `description` on pages: a short intro shown under the title, also the fallback meta description
 - `icon` on pages: a Heroicon picked from the same searchable list as menu item icons;
   `Support\Heroicons::select()` builds that field for your own forms
@@ -39,6 +40,7 @@ Merged-but-untagged changes go under **Unreleased**; the README describes the la
 
 ### Changed
 - The page body editor has no image upload button (use the cover image or a gallery)
+- The blog post form has no publish date: a post is a draft or published (live when saved)
 - `getMenu()` leaves out items whose page or gallery no longer exists (with their children);
   menu caches are cleared after migrations
 - Navigations can no longer be created or deleted in the panel

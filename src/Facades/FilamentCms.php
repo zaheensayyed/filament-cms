@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static string blogUrl()
  * @method static string postUrl(\zaheensayyed\FilamentCms\Models\Post|string $post)
  * @method static \Illuminate\Database\Eloquent\Collection getClients()
+ * @method static \Illuminate\Contracts\Pagination\LengthAwarePaginator paginateClients(?int $perPage = null)
  * @method static \Illuminate\Database\Eloquent\Collection featuredClients(?int $limit = null)
  * @method static \zaheensayyed\FilamentCms\Models\Client|null getClient(string $slug)
  * @method static string clientsUrl()

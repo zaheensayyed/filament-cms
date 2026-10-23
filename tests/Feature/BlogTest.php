@@ -53,7 +53,7 @@ describe('panel', function () {
         Storage::disk('public')->assertExists($post->cover_image);
     });
 
-    it('publishes now when no publish date is given', function () {
+    it('publishes now when saved as published', function () {
         Livewire::test(CreatePost::class)
             ->fillForm(['title' => 'Launch', 'slug' => 'launch', 'status' => Post::STATUS_PUBLISHED])
             ->call('create')
@@ -113,19 +113,22 @@ describe('panel', function () {
         expect(Post::count())->toBe(2);
     });
 
-    it('publishes every draft and scheduled post with Publish all', function () {
+    it('has no publish date field: a post is a draft or published', function () {
+        Livewire::test(CreatePost::class)
+            ->assertFormFieldExists('status')
+            ->assertFormFieldDoesNotExist('published_at');
+    });
+
+    it('publishes selected drafts and scheduled posts now and leaves live posts alone', function () {
         $live = blogPost(['published_at' => now()->subMonth()]);
         $scheduled = blogPost(['slug' => 'later', 'published_at' => now()->addWeek()]);
         $draft = blogPost(['slug' => 'draft', 'status' => Post::STATUS_DRAFT, 'published_at' => null]);
 
         Livewire::test(ListPosts::class)
-            ->assertActionVisible('publishAll')
-            ->callAction('publishAll')
-            ->assertNotified('Published 2 posts')
-            ->assertActionHidden('publishAll');
+            ->callTableBulkAction('publish', [$live, $scheduled, $draft])
+            ->assertNotified('Published 2 posts');
 
-        expect(Post::unpublished()->count())->toBe(0)
-            ->and($scheduled->fresh()->published_at->isFuture())->toBeFalse()
+        expect($scheduled->fresh()->is_published)->toBeTrue()
             ->and($draft->fresh())->is_published->toBeTrue()->updated_by->toBe(auth()->id())
             ->and($live->fresh()->published_at->toDateString())->toBe(now()->subMonth()->toDateString());
     });
@@ -148,13 +151,12 @@ describe('panel', function () {
             ->assertNotified('Nothing to publish');
     });
 
-    it('hides the publish actions from users who cannot edit posts', function () {
+    it('hides Publish selected from users who cannot edit posts', function () {
         Role::findByName('content_manager')->revokePermissionTo('update_post');
         $this->actingAs($this->createUser('content_manager'));
         blogPost(['status' => Post::STATUS_DRAFT, 'published_at' => null]);
 
         Livewire::test(ListPosts::class)
-            ->assertActionHidden('publishAll')
             ->assertTableBulkActionHidden('publish');
     });
 });

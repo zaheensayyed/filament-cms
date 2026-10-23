@@ -133,6 +133,18 @@ describe('frontend', function () {
             ->and(FilamentCms::clientsUrl())->toBe(url('clients'));
     });
 
+    it('shows 12 clients per page', function () {
+        foreach (range(1, 13) as $i) {
+            cmsClient(['name' => "Client {$i}", 'slug' => "client-{$i}", 'sort_order' => $i]);
+        }
+
+        expect(FilamentCms::paginateClients())->total()->toBe(13)->count()->toBe(12)
+            ->and(FilamentCms::paginateClients(5)->lastPage())->toBe(3);
+
+        $this->get('/clients')->assertOk()->assertSee('Client 12')->assertDontSee('Client 13');
+        $this->get('/clients?page=2')->assertOk()->assertSee('Client 13')->assertDontSee('Client 12');
+    });
+
     it('returns featured clients for the home page', function () {
         cmsClient(['name' => 'Featured B', 'slug' => 'featured-b', 'is_featured' => true, 'sort_order' => 2]);
         cmsClient(['name' => 'Featured A', 'slug' => 'featured-a', 'is_featured' => true, 'sort_order' => 1]);
