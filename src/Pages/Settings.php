@@ -14,6 +14,9 @@ use zaheensayyed\FilamentCms\FilamentCmsPlugin;
 use zaheensayyed\FilamentCms\Settings\SettingsGroup;
 use zaheensayyed\FilamentCms\Shield\CmsPermissions;
 
+/**
+ * @property Form $form
+ */
 class Settings extends Page
 {
     use InteractsWithFormActions;

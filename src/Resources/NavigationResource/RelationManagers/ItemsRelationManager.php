@@ -170,18 +170,4 @@ class ItemsRelationManager extends RelationManager
     {
         return Heroicons::select($name);
     }
-
-    private static function createdBy(array $data): array
-    {
-        $data['created_by'] = auth()->id();
-
-        return $data;
-    }
-
-    private static function updatedBy(array $data): array
-    {
-        $data['updated_by'] = auth()->id();
-
-        return $data;
-    }
 }

@@ -17,7 +17,7 @@ class NavigationItemRepository
         foreach ($data['child_menu_items'] ?? [] as $childItems) {
 
             if (isset($childItems['child_id'])) {
-                $navChildItem = NavigationItem::find($childItems['child_id']);
+                $navChildItem = NavigationItem::query()->find((int) $childItems['child_id']);
             } else {
                 $navChildItem = new NavigationItem;
                 $navChildItem->created_by = auth()->id();

@@ -6,6 +6,7 @@ use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use BezhanSalleh\FilamentShield\Facades\FilamentShield;
 use BezhanSalleh\FilamentShield\Resources\RoleResource;
 use BezhanSalleh\FilamentShield\Support\Utils;
+use Filament\Exceptions\NoDefaultPanelSetException;
 use Filament\Facades\Filament;
 use zaheensayyed\FilamentCms\FilamentCmsPlugin;
 use zaheensayyed\FilamentCms\Resources\ClientResource;
@@ -36,7 +37,12 @@ class CmsPermissions
 
     public static function guard(): string
     {
-        return Filament::getDefaultPanel()?->getAuthGuard() ?? config('auth.defaults.guard', 'web');
+        // No panel registered yet (e.g. a console command run before the panel provider).
+        try {
+            return Filament::getDefaultPanel()->getAuthGuard();
+        } catch (NoDefaultPanelSetException) {
+            return config('auth.defaults.guard', 'web');
+        }
     }
 
     /**

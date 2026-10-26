@@ -2,7 +2,6 @@
 
 namespace zaheensayyed\FilamentCms\Resources;
 
-use App\Models\User;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -29,7 +28,8 @@ class UserResource extends Resource implements HasShieldPermissions
 
     public static function getModel(): string
     {
-        return config('auth.providers.users.model', User::class);
+        // The app's user model (App\Models\User by default); the package has none of its own.
+        return config('auth.providers.users.model', 'App\\Models\\User');
     }
 
     public static function getPermissionPrefixes(): array

@@ -3,11 +3,41 @@
 namespace zaheensayyed\FilamentCms\Models;
 
 use Closure;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use zaheensayyed\FilamentCms\FilamentCms;
 
+/**
+ * @property int $id
+ * @property int $navigation_id
+ * @property ?int $parent_id
+ * @property string $name
+ * @property string $slug
+ * @property int $level
+ * @property string $type
+ * @property ?string $type_id
+ * @property ?string $custom_url
+ * @property ?string $icon
+ * @property int $created_by
+ * @property ?int $updated_by
+ * @property ?Carbon $created_at
+ * @property ?Carbon $updated_at
+ * @property-read ?Model $createdBy
+ * @property-read ?Model $updatedBy
+ * @property-read Collection<int, NavigationItem> $childItems
+ * @property-read ?Page $typePage
+ * @property-read ?Gallery $typeGallery
+ * @property-read ?Page $page
+ * @property-read ?Gallery $gallery
+ * @property-read string $title
+ * @property-read ?string $url
+ * @property-read bool $is_link
+ */
 class NavigationItem extends Model
 {
     use HasFactory;
@@ -53,17 +83,17 @@ class NavigationItem extends Model
         });
     }
 
-    public function createdBy()
+    public function createdBy(): BelongsTo
     {
         return $this->belongsTo(config('auth.providers.users.model'), 'created_by');
     }
 
-    public function updatedBy()
+    public function updatedBy(): BelongsTo
     {
         return $this->belongsTo(config('auth.providers.users.model'), 'updated_by');
     }
 
-    public function childItems()
+    public function childItems(): HasMany
     {
         return $this->hasMany(NavigationItem::class, 'parent_id')->orderBy('id');
     }
@@ -72,7 +102,7 @@ class NavigationItem extends Model
      * The linked page. Only meaningful when type is "page" — use linkedPage() to get
      * null for every other type.
      */
-    public function typePage()
+    public function typePage(): BelongsTo
     {
         return $this->belongsTo(Page::class, 'type_id');
     }
@@ -81,7 +111,7 @@ class NavigationItem extends Model
      * The linked gallery. Only meaningful when type is "gallery" — use linkedGallery()
      * to get null for every other type.
      */
-    public function typeGallery()
+    public function typeGallery(): BelongsTo
     {
         return $this->belongsTo(Gallery::class, 'type_id');
     }
@@ -89,7 +119,7 @@ class NavigationItem extends Model
     /**
      * @deprecated Use typePage(). Kept for backward compatibility.
      */
-    public function page()
+    public function page(): BelongsTo
     {
         return $this->typePage();
     }
@@ -97,7 +127,7 @@ class NavigationItem extends Model
     /**
      * @deprecated Use typeGallery(). Kept for backward compatibility.
      */
-    public function gallery()
+    public function gallery(): BelongsTo
     {
         return $this->typeGallery();
     }

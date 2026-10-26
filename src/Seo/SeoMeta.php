@@ -136,7 +136,7 @@ class SeoMeta
     {
         $path = $this->pageValue('og_image')
             ?? ($this->page instanceof Post ? $this->pageValue('cover_image') : null)
-            ?? ($this->page instanceof Client ? $this->page->cover_image_url : null)
+            ?? ($this->page instanceof Client ? $this->page->logo : null)
             ?? $this->setting('default_og_image');
 
         if ($path === null) {

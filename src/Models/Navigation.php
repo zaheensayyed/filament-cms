@@ -2,10 +2,27 @@
 
 namespace zaheensayyed\FilamentCms\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use zaheensayyed\FilamentCms\FilamentCms;
 
+/**
+ * @property int $id
+ * @property ?string $key
+ * @property string $name
+ * @property string $description
+ * @property int $created_by
+ * @property ?int $updated_by
+ * @property ?Carbon $created_at
+ * @property ?Carbon $updated_at
+ * @property-read ?Model $createdBy
+ * @property-read ?Model $updatedBy
+ * @property-read Collection<int, NavigationItem> $items
+ */
 class Navigation extends Model
 {
     use HasFactory;
@@ -24,12 +41,12 @@ class Navigation extends Model
         static::deleted(fn () => FilamentCms::forgetMenuCache());
     }
 
-    public function createdBy()
+    public function createdBy(): BelongsTo
     {
         return $this->belongsTo(config('auth.providers.users.model'), 'created_by');
     }
 
-    public function updatedBy()
+    public function updatedBy(): BelongsTo
     {
         return $this->belongsTo(config('auth.providers.users.model'), 'updated_by');
     }
@@ -75,7 +92,7 @@ class Navigation extends Model
         }
     }
 
-    public function items()
+    public function items(): HasMany
     {
         return $this->hasMany(NavigationItem::class, 'navigation_id')->where('level', 1);
     }
