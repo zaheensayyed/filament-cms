@@ -1,6 +1,7 @@
 <?php
 
 use Filament\Forms\Components\RichEditor;
+use Illuminate\Database\Events\MigrationsEnded;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Livewire\Livewire;
@@ -140,7 +141,7 @@ describe('getMenu', function () {
         expect(FilamentCms::getMenu('main-menu'))->toHaveCount(4);
 
         DB::table('navigation_items')->delete();
-        event(new \Illuminate\Database\Events\MigrationsEnded('up'));
+        event(new MigrationsEnded('up'));
 
         expect(FilamentCms::getMenu('main-menu'))->toHaveCount(0);
     });
