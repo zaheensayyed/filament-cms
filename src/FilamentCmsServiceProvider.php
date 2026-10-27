@@ -9,6 +9,7 @@ use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Database\Events\MigrationsEnded;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Illuminate\Mail\Events\MessageSent;
@@ -23,18 +24,22 @@ use Spatie\Permission\PermissionRegistrar;
 use Spatie\Permission\Traits\HasRoles;
 use zaheensayyed\FilamentCms\Commands\FilamentCmsCommand;
 use zaheensayyed\FilamentCms\Commands\SyncRolesCommand;
+use zaheensayyed\FilamentCms\Models\Client;
 use zaheensayyed\FilamentCms\Models\ContactFormSubmission;
 use zaheensayyed\FilamentCms\Models\Gallery;
 use zaheensayyed\FilamentCms\Models\GalleryImage;
 use zaheensayyed\FilamentCms\Models\Navigation;
 use zaheensayyed\FilamentCms\Models\NavigationItem;
 use zaheensayyed\FilamentCms\Models\Page;
+use zaheensayyed\FilamentCms\Models\Post;
+use zaheensayyed\FilamentCms\Policies\ClientPolicy;
 use zaheensayyed\FilamentCms\Policies\ContactFormSubmissionPolicy;
 use zaheensayyed\FilamentCms\Policies\GalleryImagePolicy;
 use zaheensayyed\FilamentCms\Policies\GalleryPolicy;
 use zaheensayyed\FilamentCms\Policies\NavigationItemPolicy;
 use zaheensayyed\FilamentCms\Policies\NavigationPolicy;
 use zaheensayyed\FilamentCms\Policies\PagePolicy;
+use zaheensayyed\FilamentCms\Policies\PostPolicy;
 use zaheensayyed\FilamentCms\Policies\RolePolicy;
 use zaheensayyed\FilamentCms\Policies\UserPolicy;
 use zaheensayyed\FilamentCms\Shield\CmsPermissions;
@@ -93,7 +98,20 @@ class FilamentCmsServiceProvider extends PackageServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 
+        // Cached menus outlive a migrate:fresh (file/redis cache), still listing pages that are
+        // gone. rescue(): a rollback may have dropped the cache table itself.
+        Event::listen(MigrationsEnded::class, fn () => rescue(fn () => FilamentCms::forgetMenuCache(), report: false));
+
         $this->bootShield();
+
+        // The catch-all page route is a fallback, so these always match first.
+        if (config('filament-cms.blog.routes')) {
+            $this->loadRoutesFrom(__DIR__ . '/../routes/blog.php');
+        }
+
+        if (config('filament-cms.clients.routes')) {
+            $this->loadRoutesFrom(__DIR__ . '/../routes/clients.php');
+        }
 
         if (config('filament-cms.routes.enabled')) {
             $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
@@ -136,6 +154,8 @@ class FilamentCmsServiceProvider extends PackageServiceProvider
         });
 
         Gate::policy(Page::class, PagePolicy::class);
+        Gate::policy(Post::class, PostPolicy::class);
+        Gate::policy(Client::class, ClientPolicy::class);
         Gate::policy(Navigation::class, NavigationPolicy::class);
         Gate::policy(NavigationItem::class, NavigationItemPolicy::class);
         Gate::policy(Gallery::class, GalleryPolicy::class);

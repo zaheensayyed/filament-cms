@@ -33,6 +33,30 @@ A gallery linked from a menu, or opened by its slug, is also served by the
 @endsection
 ```
 
+## Galleries on a page
+
+Pick a **Page** on a gallery (Galleries → Page) to show its images on that page. The
+catch-all route loads them for you as `$page->galleries`, each with its images; use the
+gallery's description as the caption. The default page view shows them in a `<figure>`;
+in your own view, a slider when there is more than one image:
+
+```blade
+@foreach ($page->galleries as $gallery)
+    <figure>
+        @foreach ($gallery->images as $image)
+            <img src="{{ $image->image_url }}" alt="{{ $image->image_caption ?? $gallery->name }}" loading="lazy">
+        @endforeach
+
+        @if ($gallery->description)
+            <figcaption>{{ $gallery->description }}</figcaption>
+        @endif
+    </figure>
+@endforeach
+```
+
+Deleting the page keeps the gallery (its Page is cleared). Page bodies have no image upload
+button: a page's images are its cover image and its galleries.
+
 Listing several galleries? Load their images in the same query:
 
 ```php

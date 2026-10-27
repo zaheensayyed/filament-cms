@@ -90,7 +90,10 @@ class ItemsRelationManager extends RelationManager
                                     ->live()
                                     ->options(NavigationItem::getAllTypeOptions())
                                     ->default(NavigationItem::TYPE_PAGE)
-                                    ->required(),
+                                    ->required()
+                                    // The page / gallery picked for the old type means nothing for the new one.
+                                    ->afterStateUpdated(fn (Set $set) => $set('child_type_id', null)),
+                                // Same as the parent item: a page / gallery / static pick, or a custom URL input.
                                 Select::make('child_type_id')
                                     ->required()
                                     ->options(function (Get $get) {
@@ -100,7 +103,12 @@ class ItemsRelationManager extends RelationManager
                                         }
 
                                         return [];
-                                    }),
+                                    })
+                                    ->visible(fn (Get $get) => NavigationItem::hasOptions($get('child_type'))),
+                                TextInput::make('child_custom_url')
+                                    ->label('Custom URL')
+                                    ->required()
+                                    ->visible(fn (Get $get) => ! NavigationItem::hasOptions($get('child_type'))),
                                 static::iconSelect('child_icon'),
                             ])
                             ->columns(2),
@@ -156,35 +164,10 @@ class ItemsRelationManager extends RelationManager
     }
 
     /**
-     * Searchable dropdown of every Heroicon (all four styles) with a preview. Search runs on
-     * the server so the ~1,300 SVGs are never sent to the browser at once.
+     * Searchable Heroicon dropdown with previews (see Heroicons::select()).
      */
     public static function iconSelect(string $name): Select
     {
-        return Select::make($name)
-            ->label('Icon')
-            ->placeholder('No icon')
-            ->searchable()
-            ->allowHtml()
-            ->optionsLimit(50)
-            ->options(fn (): array => Heroicons::withPreviews(Heroicons::search(null, 50)))
-            ->getSearchResultsUsing(fn (string $search): array => Heroicons::withPreviews(Heroicons::search($search, 50)))
-            ->getOptionLabelUsing(fn (?string $value): ?string => Heroicons::previewLabel($value))
-            ->in(fn (): array => Heroicons::names())
-            ->helperText('Any Heroicon: outline, solid, mini or micro. Type to search, e.g. "home" or "arrow solid".');
-    }
-
-    private static function createdBy(array $data): array
-    {
-        $data['created_by'] = auth()->id();
-
-        return $data;
-    }
-
-    private static function updatedBy(array $data): array
-    {
-        $data['updated_by'] = auth()->id();
-
-        return $data;
+        return Heroicons::select($name);
     }
 }

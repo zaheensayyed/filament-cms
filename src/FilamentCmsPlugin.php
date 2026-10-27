@@ -8,10 +8,12 @@ use Filament\Pages\Page;
 use Filament\Panel;
 use Filament\Resources\Resource;
 use zaheensayyed\FilamentCms\Pages\Settings;
+use zaheensayyed\FilamentCms\Resources\ClientResource;
 use zaheensayyed\FilamentCms\Resources\ContactSubmissionResource;
 use zaheensayyed\FilamentCms\Resources\GalleryResource;
 use zaheensayyed\FilamentCms\Resources\NavigationResource;
 use zaheensayyed\FilamentCms\Resources\PageResource;
+use zaheensayyed\FilamentCms\Resources\PostResource;
 use zaheensayyed\FilamentCms\Resources\UserResource;
 use zaheensayyed\FilamentCms\Settings\Groups\CompanyInfoGroup;
 use zaheensayyed\FilamentCms\Settings\Groups\ContactFormGroup;
@@ -26,7 +28,9 @@ class FilamentCmsPlugin implements Plugin
     public const RESOURCES = [
         NavigationResource::class,
         PageResource::class,
+        PostResource::class,
         GalleryResource::class,
+        ClientResource::class,
         ContactSubmissionResource::class,
     ];
 

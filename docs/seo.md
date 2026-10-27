@@ -6,6 +6,9 @@ Put the component inside `<head>`:
 {{-- CMS page --}}
 <x-filament-cms::seo :page="$page" />
 
+{{-- Blog post: also falls back to the excerpt and cover image, see blog.md --}}
+<x-filament-cms::seo :post="$post" />
+
 {{-- Any other route: emits the site-wide defaults --}}
 <x-filament-cms::seo />
 ```
@@ -21,7 +24,7 @@ Every value is resolved **page field → SEO Defaults setting → built-in fallb
 | Tag | Page field | Then | Finally |
 | --- | --- | --- | --- |
 | `<title>` | `meta_title` (used as-is) | title pattern applied to the page title | site name |
-| `description` | `meta_description` | `seo.default_description` | omitted |
+| `description` | `meta_description` | the page `description` (posts: `excerpt`), then `seo.default_description` | omitted |
 | `canonical`, `og:url` | `canonical_url` | the page's own URL | current URL |
 | `robots` | `robots` | `seo.default_robots` | `index,follow` |
 | `og:title`, `twitter:title` | `og_title` | `meta_title`, then the page title | site name |

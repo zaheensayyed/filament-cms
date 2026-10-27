@@ -63,6 +63,19 @@ it('renders page overrides and escapes them', function () {
         ->assertSee('<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"KBI"}</script>', false);
 });
 
+it('uses the page description when there is no meta description', function () {
+    $page = Page::create(['title' => 'About Us', 'slug' => 'about-us', 'description' => 'Who we are', 'created_by' => 1]);
+
+    $this->blade('<x-filament-cms::seo :page="$page" />', ['page' => $page])
+        ->assertSee('<meta name="description" content="Who we are">', false)
+        ->assertSee('<meta property="og:description" content="Who we are">', false);
+
+    $page->update(['meta_description' => 'Meta wins']);
+
+    $this->blade('<x-filament-cms::seo :page="$page" />', ['page' => $page->fresh()])
+        ->assertSee('<meta name="description" content="Meta wins">', false);
+});
+
 it('renders defaults only when there is no page', function () {
     $this->blade('<x-filament-cms::seo :page="null" />')
         ->assertSee('<title>KBI</title>', false)
@@ -76,6 +89,8 @@ it('saves SEO fields from the page form', function () {
         ->fillForm([
             'title' => 'Contact',
             'slug' => 'contact',
+            'description' => 'Talk to our team.',
+            'icon' => 'heroicon-o-phone',
             'meta_title' => 'Contact KBI',
             'robots' => 'noindex,follow',
             'structured_data' => '{"@type":"ContactPage"}',
@@ -84,9 +99,18 @@ it('saves SEO fields from the page form', function () {
         ->assertHasNoFormErrors();
 
     expect(Page::where('slug', 'contact')->first())
+        ->description->toBe('Talk to our team.')
+        ->icon->toBe('heroicon-o-phone')
         ->meta_title->toBe('Contact KBI')
         ->robots->toBe('noindex,follow')
         ->meta_description->toBeNull();
+});
+
+it('only accepts a Heroicon name as the page icon', function () {
+    Livewire::test(CreatePage::class)
+        ->fillForm(['title' => 'Contact', 'slug' => 'contact', 'icon' => 'not-an-icon'])
+        ->call('create')
+        ->assertHasFormErrors(['icon' => 'in']);
 });
 
 it('validates canonical url and structured data on the page form', function () {

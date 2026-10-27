@@ -32,6 +32,79 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Blog
+    |--------------------------------------------------------------------------
+    |
+    | Posts are written in the panel (Blog Posts). Opt-in frontend routes:
+    | GET /{prefix} lists published posts (route "filament-cms.blog.index") and
+    | GET /{prefix}/{slug} shows one (route "filament-cms.blog.show"). Drafts
+    | and scheduled posts are 404 except for users who can edit them (preview).
+    |
+    */
+
+    'blog' => [
+        'routes' => env('FILAMENT_CMS_BLOG_ROUTES', false),
+
+        'prefix' => 'blog',
+
+        'middleware' => ['web'],
+
+        'per_page' => 9,
+
+        // Views receive $posts (paginator of Post) or $post (Post).
+        'views' => [
+            'index' => 'filament-cms::blog.index',
+            'show' => 'filament-cms::blog.show',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Clients
+    |--------------------------------------------------------------------------
+    |
+    | Clients are added in the panel (Clients): title, description and images,
+    | and a Featured switch for the home page (FilamentCms::featuredClients()).
+    | Opt-in frontend route: GET /{prefix} shows the published clients as
+    | cards, per_page at a time (route "filament-cms.clients.index"). There are
+    | no pages per client; link to the page with a custom URL menu item (/{prefix}).
+    |
+    */
+
+    'clients' => [
+        'routes' => env('FILAMENT_CMS_CLIENT_ROUTES', false),
+
+        'prefix' => 'clients',
+
+        'middleware' => ['web'],
+
+        'per_page' => 12,
+
+        // The view receives $clients (paginator of Client).
+        'views' => [
+            'index' => 'filament-cms::clients.index',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Navigations
+    |--------------------------------------------------------------------------
+    |
+    | The only navigations the panel manages (key => name). They are created
+    | automatically when the Navigations list is opened; creating and deleting
+    | navigations in the panel is turned off. Render them with
+    | FilamentCms::getMenu('main-menu').
+    |
+    */
+
+    'navigations' => [
+        'main-menu' => 'Main Menu',
+        'footer-menu' => 'Footer Menu',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Contact form
     |--------------------------------------------------------------------------
     |

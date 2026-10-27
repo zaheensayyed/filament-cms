@@ -5,6 +5,7 @@ namespace zaheensayyed\FilamentCms\Resources;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -43,7 +44,14 @@ class GalleryResource extends Resource implements HasShieldPermissions
                         $set('slug', Str::slug($state));
                     }),
                 TextInput::make('slug')->required(),
-                Textarea::make('description'),
+                Select::make('page_id')
+                    ->label('Page')
+                    ->relationship('page', 'title')
+                    ->searchable()
+                    ->preload()
+                    ->helperText('Optional. The images are shown on this page, as a slider when there is more than one.'),
+                Textarea::make('description')
+                    ->helperText('Shown as the caption under the images on the page.'),
                 Grid::make('images')
                     ->schema([
                         FileUpload::make('images')
@@ -55,7 +63,8 @@ class GalleryResource extends Resource implements HasShieldPermissions
                             ->imageResizeTargetWidth('1920')
                             ->imageResizeTargetHeight('1080')
                             // ->panelAspectRatio('1:1')
-                            // ->panelLayout('compact')
+                            // Previews in a grid (3 per row on wide screens, 2 on small) instead of one full-width row each.
+                            ->panelLayout('grid')
                             ->minSize(1)
                             ->maxSize(2048),
                     ])
@@ -70,6 +79,7 @@ class GalleryResource extends Resource implements HasShieldPermissions
             ->columns([
                 TextColumn::make('id')->sortable(),
                 TextColumn::make('name')->searchable(),
+                TextColumn::make('page.title')->label('Page')->placeholder('—'),
                 TextColumn::make('createdBy.name')->description(fn (Gallery $record) => $record->created_at),
                 TextColumn::make('updatedBy.name')->description(fn (Gallery $record) => $record->updated_at),
             ])

@@ -1,5 +1,7 @@
 <?php
 
+use Filament\Forms\Components\RichEditor;
+use Illuminate\Database\Events\MigrationsEnded;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Livewire\Livewire;
@@ -10,7 +12,9 @@ use zaheensayyed\FilamentCms\Models\GalleryImage;
 use zaheensayyed\FilamentCms\Models\Navigation;
 use zaheensayyed\FilamentCms\Models\NavigationItem;
 use zaheensayyed\FilamentCms\Models\Page;
+use zaheensayyed\FilamentCms\Resources\GalleryResource\Pages\CreateGallery;
 use zaheensayyed\FilamentCms\Resources\NavigationResource\Pages\EditNavigation;
+use zaheensayyed\FilamentCms\Resources\PageResource\Pages\CreatePage;
 use zaheensayyed\FilamentCms\Resources\PageResource\Pages\EditPage;
 
 function makePage(string $title, string $slug): Page
@@ -87,7 +91,7 @@ describe('getMenu', function () {
                 ['Project Photos', url('services/photos')],
             ]],
             ['title' => 'Blog', 'url' => 'https://blog.kbi.test', 'children' => []],
-            ['title' => 'Careers', 'url' => url('careers'), 'children' => []],
+            ['title' => 'Careers', 'url' => null, 'children' => []],
         ]);
     });
 
@@ -118,6 +122,29 @@ describe('getMenu', function () {
         NavigationItem::where('slug', 'blog')->first()->delete();
         expect(FilamentCms::getMenu('main-menu'))->toHaveCount(4);
     });
+
+    it('leaves out items whose page or gallery no longer exists, with their children', function () {
+        ['home' => $home, 'services' => $services, 'gallery' => $gallery] = seedMainMenu();
+
+        // Deleted outside the panel: no model events, so only the build can notice.
+        DB::table('pages')->whereIn('id', [$home->id, $services->id])->delete();
+        DB::table('galleries')->where('id', $gallery->id)->delete();
+
+        expect(renderMenu(FilamentCms::getMenu('main-menu')))->toEqual([
+            ['title' => 'Blog', 'url' => 'https://blog.kbi.test', 'children' => []],
+            ['title' => 'Careers', 'url' => null, 'children' => []],
+        ]);
+    });
+
+    it('forgets cached menus when migrations run', function () {
+        seedMainMenu();
+        expect(FilamentCms::getMenu('main-menu'))->toHaveCount(4);
+
+        DB::table('navigation_items')->delete();
+        event(new MigrationsEnded('up'));
+
+        expect(FilamentCms::getMenu('main-menu'))->toHaveCount(0);
+    });
 });
 
 describe('NavigationItem', function () {
@@ -131,8 +158,22 @@ describe('NavigationItem', function () {
             ->and($href(['type' => 'custom_url', 'custom_url' => 'mailto:hello@kbi.test']))->toBe('mailto:hello@kbi.test')
             ->and($href(['type' => 'custom_url', 'custom_url' => '#contact']))->toBe('#contact')
             ->and($href(['type' => 'custom_url', 'custom_url' => null]))->toBeNull()
-            ->and($href(['type' => 'static', 'slug' => 'careers']))->toBe(url('careers'))
+            ->and($href(['type' => 'static', 'slug' => 'careers']))->toBeNull()
             ->and($href(['type' => 'page', 'slug' => 'about/team']))->toBe(url('about/team'));
+    });
+
+    it('renders static items as plain text, not links', function () {
+        $menu = Navigation::create(['name' => 'Footer', 'description' => '-', 'created_by' => 1]);
+
+        expect(makeItem($menu, ['name' => 'Products', 'slug' => 'products', 'type' => 'static'])->is_link)->toBeFalse()
+            ->and(makeItem($menu, ['name' => 'Blog', 'slug' => 'blog', 'type' => 'custom_url', 'custom_url' => null])->is_link)->toBeFalse()
+            ->and(makeItem($menu, ['name' => 'About', 'slug' => 'about', 'type' => 'page'])->is_link)->toBeTrue();
+
+        NavigationItem::resolveUrlUsing('static', fn (NavigationItem $item) => url($item->slug));
+
+        expect(makeItem($menu, ['name' => 'Careers', 'slug' => 'careers', 'type' => 'static'])->is_link)->toBeTrue();
+
+        NavigationItem::resolveUrlUsing('static', null);
     });
 
     it('lets the app override the href for a type', function () {
@@ -197,6 +238,15 @@ describe('content helpers', function () {
 
         expect((new GalleryImage(['image_name' => 'photos/one.jpg']))->image_url)->toBe('https://cdn.kbi.test/photos/one.jpg');
     });
+
+    it('builds page cover image urls from the configured disk', function () {
+        config()->set('filesystems.disks.cdn', ['driver' => 'local', 'root' => sys_get_temp_dir(), 'url' => 'https://cdn.kbi.test']);
+        config()->set('filament.default_filesystem_disk', 'cdn');
+
+        expect((new Page(['cover_image' => 'pages/fire.jpg']))->cover_image_url)->toBe('https://cdn.kbi.test/pages/fire.jpg')
+            ->and((new Page(['cover_image' => 'https://img.kbi.test/fire.jpg']))->cover_image_url)->toBe('https://img.kbi.test/fire.jpg')
+            ->and((new Page)->cover_image_url)->toBeNull();
+    });
 });
 
 describe('catch-all route', function () {
@@ -207,6 +257,27 @@ describe('catch-all route', function () {
         $this->get('/cctv')->assertOk()->assertSee('CCTV Installation body');
         $this->get('/services/photos')->assertOk()->assertSee('<h1>Project Photos</h1>', false)->assertSee('project-photos/one.jpg');
         $this->get('/nothing-here')->assertNotFound();
+    });
+
+    it('shows the galleries picked for a page with their description as the caption', function () {
+        $page = makePage('Fire Detection', 'fire-detection');
+        $gallery = Gallery::create(['name' => 'Fire Detection Photos', 'slug' => 'fire-detection-photos', 'description' => 'Panel room at Acme Towers', 'page_id' => $page->id, 'created_by' => 1]);
+        GalleryImage::create(['gallery_id' => $gallery->id, 'image_name' => 'fire-detection-photos/one.jpg', 'created_by' => 1]);
+        GalleryImage::create(['gallery_id' => $gallery->id, 'image_name' => 'fire-detection-photos/two.jpg', 'created_by' => 1]);
+        Gallery::create(['name' => 'Elsewhere', 'slug' => 'elsewhere', 'description' => 'Not on this page', 'created_by' => 1]);
+
+        $this->get('/fire-detection')->assertOk()
+            ->assertSeeInOrder(['fire-detection-photos/one.jpg', 'fire-detection-photos/two.jpg', '<figcaption>Panel room at Acme Towers</figcaption>'], false)
+            ->assertDontSee('Not on this page');
+    });
+
+    it('keeps a gallery when its page is deleted', function () {
+        $page = makePage('Fire Detection', 'fire-detection');
+        $gallery = Gallery::create(['name' => 'Photos', 'slug' => 'photos', 'page_id' => $page->id, 'created_by' => 1]);
+
+        $page->delete();
+
+        expect($gallery->fresh())->not->toBeNull()->page_id->toBeNull();
     });
 
     it('never shadows routes defined by the app', function () {
@@ -256,5 +327,24 @@ describe('audit columns', function () {
         expect($menu->refresh())
             ->created_by->toBe(1)
             ->updated_by->toBe($editor->id);
+    });
+});
+
+describe('page images in the panel', function () {
+    it('picks the page a gallery is shown on', function () {
+        $page = makePage('Fire Detection', 'fire-detection');
+
+        Livewire::test(CreateGallery::class)
+            ->fillForm(['name' => 'Fire Detection Photos', 'slug' => 'fire-detection-photos', 'page_id' => $page->id, 'images' => []])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        expect(Gallery::sole()->page->is($page))->toBeTrue()
+            ->and($page->galleries->pluck('slug')->all())->toBe(['fire-detection-photos']);
+    });
+
+    it('has no image upload in the page body editor', function () {
+        Livewire::test(CreatePage::class)
+            ->assertFormFieldExists('body', fn (RichEditor $field) => ! $field->hasToolbarButton('attachFiles') && $field->hasToolbarButton('bold'));
     });
 });

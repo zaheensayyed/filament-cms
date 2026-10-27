@@ -2,14 +2,17 @@
 
 namespace zaheensayyed\FilamentCms;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use zaheensayyed\FilamentCms\Models\Client;
 use zaheensayyed\FilamentCms\Models\Gallery;
 use zaheensayyed\FilamentCms\Models\NavigationItem;
 use zaheensayyed\FilamentCms\Models\Page;
+use zaheensayyed\FilamentCms\Models\Post;
 use zaheensayyed\FilamentCms\Models\Setting;
 use zaheensayyed\FilamentCms\Repositories\MenuRepository;
 
@@ -22,6 +25,12 @@ class FilamentCms
     public const MENU_CACHE_INDEX = 'filament-cms.menu-keys';
 
     public const ROUTE_NAME = 'filament-cms.page';
+
+    public const BLOG_INDEX_ROUTE = 'filament-cms.blog.index';
+
+    public const BLOG_SHOW_ROUTE = 'filament-cms.blog.show';
+
+    public const CLIENTS_INDEX_ROUTE = 'filament-cms.clients.index';
 
     /**
      * Top-level items of a menu, looked up by its stable key (or, for backward
@@ -103,6 +112,116 @@ class FilamentCms
         }
 
         return url($slug);
+    }
+
+    /**
+     * Published blog posts, newest first, paginated (config "filament-cms.blog.per_page").
+     *
+     * @return LengthAwarePaginator<Post>
+     */
+    public static function getPosts(?int $perPage = null): LengthAwarePaginator
+    {
+        return Post::published()
+            ->with('createdBy')
+            ->latest('published_at')
+            ->latest('id')
+            ->paginate($perPage ?? (int) config('filament-cms.blog.per_page', 9));
+    }
+
+    /**
+     * The newest published posts, e.g. for a "Latest from the blog" section.
+     *
+     * @return Collection<int, Post>
+     */
+    public static function latestPosts(int $limit = 3): Collection
+    {
+        return Post::published()->with('createdBy')->latest('published_at')->latest('id')->take($limit)->get();
+    }
+
+    /**
+     * A published post by slug; drafts and scheduled posts return null.
+     */
+    public static function getPost(string $slug): ?Post
+    {
+        return Post::published()->with('createdBy')->where('slug', trim($slug, '/'))->first();
+    }
+
+    /**
+     * Frontend URL of the blog: the package's blog route when it is enabled, otherwise url(prefix).
+     */
+    public static function blogUrl(): string
+    {
+        if (Route::has(static::BLOG_INDEX_ROUTE)) {
+            return route(static::BLOG_INDEX_ROUTE);
+        }
+
+        return url(trim((string) config('filament-cms.blog.prefix', 'blog'), '/'));
+    }
+
+    /**
+     * Frontend URL of a post: the package's blog route when it is enabled, otherwise
+     * url("{prefix}/{slug}").
+     */
+    public static function postUrl(Post | string $post): string
+    {
+        $slug = $post instanceof Post ? $post->slug : trim($post, '/');
+
+        if (Route::has(static::BLOG_SHOW_ROUTE)) {
+            return route(static::BLOG_SHOW_ROUTE, ['slug' => $slug]);
+        }
+
+        return url(trim(config('filament-cms.blog.prefix', 'blog') . '/' . $slug, '/'));
+    }
+
+    /**
+     * Published clients in the panel's order.
+     *
+     * @return Collection<int, Client>
+     */
+    public static function getClients(): Collection
+    {
+        return Client::published()->ordered()->get();
+    }
+
+    /**
+     * Published clients in the panel's order, paginated (config "filament-cms.clients.per_page").
+     *
+     * @return LengthAwarePaginator<Client>
+     */
+    public static function paginateClients(?int $perPage = null): LengthAwarePaginator
+    {
+        return Client::published()->ordered()->paginate($perPage ?? (int) config('filament-cms.clients.per_page', 12));
+    }
+
+    /**
+     * Published clients marked as featured, e.g. for the home page.
+     *
+     * @return Collection<int, Client>
+     */
+    public static function featuredClients(?int $limit = null): Collection
+    {
+        return Client::published()->featured()->ordered()->when($limit, fn ($query) => $query->take($limit))->get();
+    }
+
+    /**
+     * A published client by slug; unpublished clients return null.
+     */
+    public static function getClient(string $slug): ?Client
+    {
+        return Client::published()->where('slug', trim($slug, '/'))->first();
+    }
+
+    /**
+     * Frontend URL of the clients list: the package's clients route when it is enabled,
+     * otherwise url(prefix).
+     */
+    public static function clientsUrl(): string
+    {
+        if (Route::has(static::CLIENTS_INDEX_ROUTE)) {
+            return route(static::CLIENTS_INDEX_ROUTE);
+        }
+
+        return url(trim((string) config('filament-cms.clients.prefix', 'clients'), '/'));
     }
 
     /**

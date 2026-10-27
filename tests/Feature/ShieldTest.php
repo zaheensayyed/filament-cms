@@ -18,7 +18,9 @@ use zaheensayyed\FilamentCms\Models\GalleryImage;
 use zaheensayyed\FilamentCms\Models\Navigation;
 use zaheensayyed\FilamentCms\Models\NavigationItem;
 use zaheensayyed\FilamentCms\Models\Page;
+use zaheensayyed\FilamentCms\Models\Post;
 use zaheensayyed\FilamentCms\Pages\Settings;
+use zaheensayyed\FilamentCms\Resources\ClientResource;
 use zaheensayyed\FilamentCms\Resources\ContactSubmissionResource;
 use zaheensayyed\FilamentCms\Resources\ContactSubmissionResource\Pages\ListContactSubmissions;
 use zaheensayyed\FilamentCms\Resources\GalleryResource;
@@ -26,13 +28,16 @@ use zaheensayyed\FilamentCms\Resources\GalleryResource\Pages\CreateGallery;
 use zaheensayyed\FilamentCms\Resources\GalleryResource\Pages\EditGallery;
 use zaheensayyed\FilamentCms\Resources\GalleryResource\RelationManagers\ImagesRelationManager;
 use zaheensayyed\FilamentCms\Resources\NavigationResource;
-use zaheensayyed\FilamentCms\Resources\NavigationResource\Pages\CreateNavigation;
 use zaheensayyed\FilamentCms\Resources\NavigationResource\Pages\EditNavigation;
+use zaheensayyed\FilamentCms\Resources\NavigationResource\Pages\ListNavigations;
 use zaheensayyed\FilamentCms\Resources\NavigationResource\RelationManagers\ItemsRelationManager;
 use zaheensayyed\FilamentCms\Resources\PageResource;
 use zaheensayyed\FilamentCms\Resources\PageResource\Pages\CreatePage;
 use zaheensayyed\FilamentCms\Resources\PageResource\Pages\EditPage;
 use zaheensayyed\FilamentCms\Resources\PageResource\Pages\ListPages;
+use zaheensayyed\FilamentCms\Resources\PostResource;
+use zaheensayyed\FilamentCms\Resources\PostResource\Pages\CreatePost;
+use zaheensayyed\FilamentCms\Resources\PostResource\Pages\EditPost;
 use zaheensayyed\FilamentCms\Resources\UserResource;
 use zaheensayyed\FilamentCms\Resources\UserResource\Pages\CreateUser;
 use zaheensayyed\FilamentCms\Resources\UserResource\Pages\ListUsers;
@@ -59,6 +64,8 @@ describe('default roles', function () {
             ->and(Role::findByName('admin')->permissions->pluck('name')->sort()->values()->all())->toBe(Permission::pluck('name')->sort()->values()->all())
             ->and(Permission::pluck('name')->all())->toContain(
                 'view_any_page',
+                'create_post',
+                'update_client',
                 'delete_any_navigation',
                 'update_gallery',
                 'page_Settings',
@@ -70,12 +77,12 @@ describe('default roles', function () {
             );
     });
 
-    it('seeds content_manager with exactly CRUD on pages, menus, galleries and read-only submissions', function () {
+    it('seeds content_manager with exactly CRUD on pages, posts, menus, galleries, clients and read-only submissions', function () {
         $crud = fn (string $entity) => array_map(fn ($p) => "{$p}_{$entity}", ['view', 'view_any', 'create', 'update', 'delete', 'delete_any']);
 
         expect(Role::findByName('content_manager')->permissions->pluck('name')->sort()->values()->all())
             ->toBe(collect([
-                ...$crud('page'), ...$crud('navigation'), ...$crud('gallery'),
+                ...$crud('page'), ...$crud('post'), ...$crud('navigation'), ...$crud('gallery'), ...$crud('client'),
                 'view_contact::submission', 'view_any_contact::submission',
             ])->sort()->values()->all());
     });
@@ -135,13 +142,34 @@ describe('content_manager', function () {
         expect(Page::count())->toBe(0);
     });
 
-    it('can manage menus and their items', function () {
-        Livewire::test(CreateNavigation::class)
-            ->fillForm(['name' => 'Footer', 'key' => 'footer', 'description' => 'Footer links'])
+    it('can create, edit and delete a blog post', function () {
+        Livewire::test(CreatePost::class)
+            ->fillForm(['title' => 'News', 'slug' => 'news', 'status' => Post::STATUS_PUBLISHED])
             ->call('create')
             ->assertHasNoFormErrors();
 
-        $navigation = Navigation::sole();
+        $post = Post::sole();
+
+        Livewire::test(EditPost::class, ['record' => $post->getRouteKey()])
+            ->fillForm(['title' => 'Company news'])
+            ->call('save')
+            ->assertHasNoFormErrors()
+            ->callAction('delete');
+
+        expect(Post::count())->toBe(0);
+    });
+
+    it('can manage menus and their items', function () {
+        Livewire::test(ListNavigations::class)->assertOk();
+
+        $navigation = Navigation::where('key', 'footer-menu')->sole();
+
+        Livewire::test(EditNavigation::class, ['record' => $navigation->getRouteKey()])
+            ->fillForm(['name' => 'Footer Links'])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        expect($navigation->fresh()->name)->toBe('Footer Links');
         $page = Page::create(['title' => 'Home', 'slug' => 'home', 'created_by' => 1]);
 
         $items = Livewire::test(ItemsRelationManager::class, ['ownerRecord' => $navigation, 'pageClass' => EditNavigation::class])
@@ -200,7 +228,8 @@ describe('content_manager', function () {
             // Filament only lists a resource in the navigation when canViewAny() passes.
             ->and(UserResource::canViewAny())->toBeFalse()
             ->and(RoleResource::canViewAny())->toBeFalse()
-            ->and(PageResource::canViewAny())->toBeTrue();
+            ->and(PageResource::canViewAny())->toBeTrue()
+            ->and(PostResource::canViewAny())->toBeTrue();
     });
 });
 
@@ -214,9 +243,9 @@ describe('admin', function () {
 
         expect(ContactFormSubmission::count())->toBe(0);
 
-        foreach ([PageResource::class, NavigationResource::class, GalleryResource::class, UserResource::class, RoleResource::class] as $resource) {
+        foreach ([PageResource::class, PostResource::class, NavigationResource::class, GalleryResource::class, ClientResource::class, UserResource::class, RoleResource::class] as $resource) {
             expect($resource::canViewAny())->toBeTrue()
-                ->and($resource::canCreate())->toBeTrue();
+                ->and($resource::canCreate())->toBe($resource !== NavigationResource::class);
         }
     });
 
@@ -267,7 +296,7 @@ describe('relation managers respect the parent permissions', function () {
     it('denies a user without roles everywhere', function () {
         $this->actingAs($this->createUser());
 
-        foreach ([PageResource::class, NavigationResource::class, GalleryResource::class, ContactSubmissionResource::class, UserResource::class, RoleResource::class] as $resource) {
+        foreach ([PageResource::class, PostResource::class, NavigationResource::class, GalleryResource::class, ClientResource::class, ContactSubmissionResource::class, UserResource::class, RoleResource::class] as $resource) {
             expect($resource::canViewAny())->toBeFalse();
         }
 

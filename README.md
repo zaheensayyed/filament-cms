@@ -12,10 +12,12 @@ sites, managed in a [Filament](https://filamentphp.com) panel and rendered with 
 
 ## Features
 
-- **Pages** with a rich-text editor and per-page SEO fields
-- **Menus** with 2 levels, linking to pages, galleries, custom URLs or your own routes; Heroicon icons on child items; cached
+- **Pages** with a rich-text editor, a description, a Heroicon and per-page SEO fields
+- **Blog**: posts with drafts, scheduled publishing, cover images and SEO; `/blog` routes and `FilamentCms::getPosts()` ([docs](docs/blog.md))
+- **Menus**: a Main Menu and a Footer Menu with 2 levels, linking to pages, galleries or custom URLs, plus static (non-clickable) labels; Heroicon icons on child items; cached
 - **Catch-all route** that serves pages and galleries by slug (works with `route:cache`)
 - **Galleries** with image uploads on any filesystem disk
+- **Clients** as cards (logo, title, description) on one `/clients` page; featured clients for the home page ([docs](docs/clients.md))
 - **SEO component**: title, description, canonical, robots, Open Graph, Twitter, JSON-LD
 - **Settings** page with Company Info, SEO Defaults and Contact Form tabs, extensible; read with `FilamentCms::setting()` ([key reference](docs/settings.md#key-reference))
 - **Users & roles** with Filament Shield: `admin` and `content_manager` roles out of the box ([docs](docs/roles.md))
@@ -45,7 +47,9 @@ $panel->plugins([
 ]);
 ```
 
-Serve CMS pages by slug on the frontend by adding `FILAMENT_CMS_ROUTES=true` to `.env`.
+Serve CMS pages by slug on the frontend by adding `FILAMENT_CMS_ROUTES=true` to `.env`, and
+the blog at `/blog` with `FILAMENT_CMS_BLOG_ROUTES=true` and clients at `/clients` with
+`FILAMENT_CMS_CLIENT_ROUTES=true`.
 
 **Upgrading from 1.0.x?** Menus, routing and relations changed: follow [UPGRADE.md](UPGRADE.md).
 
@@ -73,6 +77,8 @@ FilamentCms::getMenu('main-menu');        // cached menu items with url, title, 
 FilamentCms::getPage('about-us');         // ?Page
 FilamentCms::getGallery('event-2017');    // ?Gallery with images
 FilamentCms::resolveSlug('about/team');   // Page, Gallery or null
+FilamentCms::getPosts();                  // published blog posts, paginated
+FilamentCms::featuredClients();           // clients marked Featured, in the panel's order
 FilamentCms::setting('company.email');    // settings value, cached
 ```
 
@@ -80,7 +86,7 @@ FilamentCms::setting('company.email');    // settings value, cached
 
 Full guide in [docs/](docs/README.md): [installation](docs/installation.md) ·
 [concepts](docs/concepts.md) · [menus](docs/menus.md) ·
-[routing & pages](docs/routing-and-pages.md) · [galleries](docs/galleries.md) ·
+[routing & pages](docs/routing-and-pages.md) · [blog](docs/blog.md) · [galleries](docs/galleries.md) · [clients](docs/clients.md) ·
 [SEO](docs/seo.md) · [contact form](docs/contact-form.md) · [settings](docs/settings.md) ·
 [roles](docs/roles.md) · [customization](docs/customization.md)
 

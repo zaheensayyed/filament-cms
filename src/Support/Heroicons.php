@@ -3,6 +3,7 @@
 namespace zaheensayyed\FilamentCms\Support;
 
 use Composer\InstalledVersions;
+use Filament\Forms\Components\Select;
 use Illuminate\Support\Str;
 
 /**
@@ -32,6 +33,25 @@ class Heroicons
     /**
      * @return array<string, string> icon name => label, e.g. "heroicon-o-home" => "Home (Outline)"
      */
+    /**
+     * Searchable dropdown of every Heroicon (all four styles) with a preview. Search runs on
+     * the server so the ~1,300 SVGs are never sent to the browser at once.
+     */
+    public static function select(string $name): Select
+    {
+        return Select::make($name)
+            ->label('Icon')
+            ->placeholder('No icon')
+            ->searchable()
+            ->allowHtml()
+            ->optionsLimit(50)
+            ->options(fn (): array => static::withPreviews(static::search(null, 50)))
+            ->getSearchResultsUsing(fn (string $search): array => static::withPreviews(static::search($search, 50)))
+            ->getOptionLabelUsing(fn (?string $value): ?string => static::previewLabel($value))
+            ->in(fn (): array => static::names())
+            ->helperText('Any Heroicon: outline, solid, mini or micro. Type to search, e.g. "home" or "arrow solid".');
+    }
+
     public static function options(): array
     {
         if (static::$icons !== null) {

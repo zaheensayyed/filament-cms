@@ -3,9 +3,24 @@
 namespace zaheensayyed\FilamentCms\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Throwable;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property ?string $phone
+ * @property ?string $subject
+ * @property string $message
+ * @property ?string $ip_address
+ * @property ?string $user_agent
+ * @property string $mail_status
+ * @property ?string $mail_error
+ * @property ?Carbon $created_at
+ * @property ?Carbon $updated_at
+ */
 class ContactFormSubmission extends Model
 {
     const MAIL_PENDING = 'pending';

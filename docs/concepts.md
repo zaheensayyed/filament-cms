@@ -6,21 +6,39 @@ Everything is edited in the Filament panel and read on the frontend through the
 | Concept | Panel | Frontend API |
 | --- | --- | --- |
 | **Pages** | Pages | `FilamentCms::getPage($slug)`, catch-all route |
+| **Blog posts** | Blog Posts | `FilamentCms::getPosts()`, `getPost($slug)`, `/blog` routes |
 | **Navigations & items** | Navigations → Items | `FilamentCms::getMenu($key)` |
 | **Galleries & images** | Galleries → Images | `FilamentCms::getGallery($slug)` |
+| **Clients** | Clients | `FilamentCms::getClients()`, `featuredClients()`, `/clients` routes |
 | **Settings** | Settings (tabs) | `FilamentCms::setting($key, $default)` |
 | **Contact submissions** | Contact Submissions | `<x-filament-cms::contact-form />` |
 | **Users & roles** | Users, Roles | panel only, see [roles](roles.md) |
 
 ## Pages
 
-A title, a unique-ish `slug`, a rich-text `body` and optional SEO fields (meta title and
+A title, a unique-ish `slug`, a short `description` (an intro to show under the title), an
+optional `icon` (any Heroicon, picked from a searchable list), a rich-text `body` and optional SEO fields (meta title and
 description, canonical URL, robots, Open Graph, JSON-LD). See [SEO](seo.md).
+
+## Blog posts
+
+Like pages, plus an excerpt, a cover image, a **Draft / Published** status and a publish date
+(a future date schedules the post). Only published posts whose date has passed reach the
+frontend. Stored in `blog_posts`. See [blog](blog.md).
 
 ## Navigations and items
 
-A **navigation** is one menu (header, footer, …). Look it up by its stable **key**
-(`main-menu`); the key is set in the panel and doesn't change when the menu is renamed.
+A **navigation** is one menu. There are exactly two, created automatically the first time
+**Navigations** is opened in the panel: **Main Menu** (`main-menu`) and **Footer Menu**
+(`footer-menu`). Admins can rename them and edit their items, but can't create or delete
+navigations. Change the list in `config/filament-cms.php` (`navigations`, key => name).
+
+Look a menu up by its stable **key** (`main-menu`); the key doesn't change when the menu is
+renamed.
+
+In the **Footer Menu**, each top-level item is a column **heading** (e.g. "Products", rename it
+any time) and its child items are the links listed under it. Make the heading a `static` item
+so it isn't clickable.
 
 A navigation has **items**, up to **2 levels**: top-level items and their `childItems`.
 Each item has a `type` that decides what it links to:
@@ -30,7 +48,7 @@ Each item has a `type` that decides what it links to:
 | `page` | a Page (`type_id`) | CMS URL of the item's slug, e.g. `/about` |
 | `gallery` | a Gallery (`type_id`) | CMS URL of the item's slug |
 | `custom_url` | any URL in `custom_url` | that URL (relative paths are made absolute) |
-| `static` | a route your app defines | `url($slug)` |
+| `static` | nothing: a plain label, e.g. a dropdown or footer heading | `null` (`is_link` is `false`) |
 
 Child slugs include the parent: a "Team" item under "About" has the slug `about/team`.
 Child items can also have an **icon**: any [Heroicon](https://heroicons.com) in any style,
@@ -39,8 +57,9 @@ picked from a searchable dropdown in the panel and stored as its Blade name
 
 ## Galleries and images
 
-A gallery has a name, slug, description and many images. Images are uploaded in the panel
-to Filament's default disk; `$image->image_url` gives the public URL.
+A gallery has a name, slug, description and many images, and can be shown on a page (its
+**Page** field). Images are uploaded in the panel to Filament's default disk;
+`$image->image_url` gives the public URL. See [galleries on a page](galleries.md#galleries-on-a-page).
 
 ## Settings
 
@@ -56,6 +75,7 @@ erDiagram
     navigation_items ||--o{ navigation_items : "parent_id (2 levels)"
     navigation_items }o--o| pages : "type = page, type_id"
     navigation_items }o--o| galleries : "type = gallery, type_id"
+    pages |o--o{ galleries : "shown on, page_id"
     galleries ||--o{ gallery_images : "has images"
 
     navigations {
@@ -86,6 +106,7 @@ erDiagram
         bigint id
         string name
         string slug "unique"
+        bigint page_id "nullable, page it is shown on"
     }
     gallery_images {
         bigint id

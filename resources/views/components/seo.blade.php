@@ -1,7 +1,9 @@
-@props(['page' => null])
+{{-- Pass a CMS page as :page, a blog post as :post or a client as :client (any of them also works as :page). --}}
+@props(['page' => null, 'post' => null, 'client' => null])
 
 @php
-    $seo = new \zaheensayyed\FilamentCms\Seo\SeoMeta($page);
+    $seo = new \zaheensayyed\FilamentCms\Seo\SeoMeta($post ?? $client ?? $page);
+    $publishedTime = $seo->publishedTime();
     $title = $seo->title();
     $description = $seo->description();
     $canonical = $seo->canonical();
@@ -27,6 +29,9 @@
 <meta property="og:url" content="{{ $canonical }}">
 @if ($ogImage)
 <meta property="og:image" content="{{ $ogImage }}">
+@endif
+@if ($publishedTime)
+<meta property="article:published_time" content="{{ $publishedTime }}">
 @endif
 
 <meta name="twitter:card" content="{{ $seo->twitterCard() }}">

@@ -3,11 +3,41 @@
 namespace zaheensayyed\FilamentCms\Models;
 
 use Closure;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use zaheensayyed\FilamentCms\FilamentCms;
 
+/**
+ * @property int $id
+ * @property int $navigation_id
+ * @property ?int $parent_id
+ * @property string $name
+ * @property string $slug
+ * @property int $level
+ * @property string $type
+ * @property ?string $type_id
+ * @property ?string $custom_url
+ * @property ?string $icon
+ * @property int $created_by
+ * @property ?int $updated_by
+ * @property ?Carbon $created_at
+ * @property ?Carbon $updated_at
+ * @property-read ?Model $createdBy
+ * @property-read ?Model $updatedBy
+ * @property-read Collection<int, NavigationItem> $childItems
+ * @property-read ?Page $typePage
+ * @property-read ?Gallery $typeGallery
+ * @property-read ?Page $page
+ * @property-read ?Gallery $gallery
+ * @property-read string $title
+ * @property-read ?string $url
+ * @property-read bool $is_link
+ */
 class NavigationItem extends Model
 {
     use HasFactory;
@@ -45,19 +75,25 @@ class NavigationItem extends Model
     {
         static::saved(fn () => FilamentCms::forgetMenuCache());
         static::deleted(fn () => FilamentCms::forgetMenuCache());
+
+        // Child items go with their parent (single and bulk delete), so none are left behind
+        // without a menu entry but still answering at their slug.
+        static::deleting(function (NavigationItem $item) {
+            NavigationItem::query()->where('parent_id', $item->getKey())->get()->each->delete();
+        });
     }
 
-    public function createdBy()
+    public function createdBy(): BelongsTo
     {
         return $this->belongsTo(config('auth.providers.users.model'), 'created_by');
     }
 
-    public function updatedBy()
+    public function updatedBy(): BelongsTo
     {
         return $this->belongsTo(config('auth.providers.users.model'), 'updated_by');
     }
 
-    public function childItems()
+    public function childItems(): HasMany
     {
         return $this->hasMany(NavigationItem::class, 'parent_id')->orderBy('id');
     }
@@ -66,7 +102,7 @@ class NavigationItem extends Model
      * The linked page. Only meaningful when type is "page" — use linkedPage() to get
      * null for every other type.
      */
-    public function typePage()
+    public function typePage(): BelongsTo
     {
         return $this->belongsTo(Page::class, 'type_id');
     }
@@ -75,7 +111,7 @@ class NavigationItem extends Model
      * The linked gallery. Only meaningful when type is "gallery" — use linkedGallery()
      * to get null for every other type.
      */
-    public function typeGallery()
+    public function typeGallery(): BelongsTo
     {
         return $this->belongsTo(Gallery::class, 'type_id');
     }
@@ -83,7 +119,7 @@ class NavigationItem extends Model
     /**
      * @deprecated Use typePage(). Kept for backward compatibility.
      */
-    public function page()
+    public function page(): BelongsTo
     {
         return $this->typePage();
     }
@@ -91,7 +127,7 @@ class NavigationItem extends Model
     /**
      * @deprecated Use typeGallery(). Kept for backward compatibility.
      */
-    public function gallery()
+    public function gallery(): BelongsTo
     {
         return $this->typeGallery();
     }
@@ -122,7 +158,7 @@ class NavigationItem extends Model
      * Frontend href for this item, whatever its type:
      * - custom_url: the stored custom_url (relative paths are made absolute)
      * - page / gallery / category_list: the CMS route for the item's slug
-     * - static: url($slug), for routes the consumer app defines itself
+     * - static: null, it is a plain label (a dropdown or footer heading), not a link
      *
      * Override per type with NavigationItem::resolveUrlUsing().
      */
@@ -134,9 +170,18 @@ class NavigationItem extends Model
 
         return match ($this->type) {
             self::TYPE_CUSTOM_URL => static::normalizeUrl($this->custom_url),
-            self::TYPE_STATIC => url($this->slug),
+            self::TYPE_STATIC => null,
             default => FilamentCms::url($this->slug),
         };
+    }
+
+    /**
+     * Whether to render the item as a link: false for static items (and a custom URL left
+     * empty), which render as plain text.
+     */
+    public function getIsLinkAttribute(): bool
+    {
+        return filled($this->url);
     }
 
     /**
