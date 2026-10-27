@@ -5,6 +5,10 @@ Merged-but-untagged changes go under **Unreleased**; the README describes the la
 
 ## Unreleased
 
+_Nothing yet._
+
+## 1.1.0 - 2026-10-27
+
 ### Added
 - Settings page with grouped, extensible tabs and `FilamentCms::setting()` (Company Info tab)
 - SEO fields on pages, SEO Defaults settings tab and `<x-filament-cms::seo />` component
